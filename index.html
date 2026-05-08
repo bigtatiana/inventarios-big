@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiG Inventarios · Área de Innovación</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ───────────────────────────────────────────────── */
+:root{
+  --bg:       #001e33;
+  --bg2:      #002B4A;
+  --bg3:      #003a61;
+  --bg4:      #004878;
+  --line:     rgba(150,186,208,.12);
+  --line2:    rgba(150,186,208,.22);
+  --tx:       #F5F8FB;
+  --tx2:      #96BAD0;
+  --tx3:      #5a84a0;
+  --acc:      #017BC4;
+  --acc2:     #1B5FA4;
+  --grn:      #34d399;
+  --red:      #f87171;
+  --amb:      #fbbf24;
+  --teal:     #96BAD0;
+  --r:        10px;
+  --r2:       6px;
+  --sh:       0 4px 24px rgba(0,0,0,.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Nunito',Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;display:flex}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.sb{width:210px;min-width:210px;background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+.sb-logo{padding:22px 16px 18px;border-bottom:1px solid var(--line)}
+.sb-logo .mark{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:20px;font-weight:800;letter-spacing:-1px;color:var(--tx)}
+.sb-logo .mark b{color:var(--acc)}
+.sb-logo .sub{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--tx3);margin-top:3px}
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
+.sb-sec{padding:14px 16px 5px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);font-weight:600}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;margin:1px 6px;border-radius:var(--r2);cursor:pointer;transition:.12s;position:relative}
+.sb-item:hover{background:var(--bg3)}
+.sb-item.on{background:rgba(91,141,239,.12);color:var(--acc)}
+.sb-item .ico{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.sb-item .lbl{font-size:12.5px;font-weight:500}
+.sb-item .bdg{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;min-width:17px;text-align:center}
+.sb-foot{padding:14px;border-top:1px solid var(--line)}
+.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#017BC4,#002B4A);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* ── MAIN ─────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.bar{height:52px;min-height:52px;background:var(--bg2);border-bottom:3px solid var(--acc);display:flex;align-items:center;padding:0 20px;gap:14px}
+.bar-title{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:15px;font-weight:700;flex:1}
+.search-wrap{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--line2);border-radius:var(--r2);padding:0 11px;height:32px;width:220px}
+.search-wrap input{background:none;border:none;outline:none;color:var(--tx);font-size:12px;width:100%;font-family:'Nunito',Arial,sans-serif}
+.search-wrap input::placeholder{color:var(--tx3)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r2);border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:'Nunito',Arial,sans-serif;transition:.12s;white-space:nowrap}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc2)}
+.btn-g{background:transparent;color:var(--tx2);border:1px solid var(--line2)}.btn-g:hover{background:var(--bg3);color:var(--tx)}
+.btn-ok{background:rgba(52,211,153,.1);color:var(--grn);border:1px solid rgba(52,211,153,.2)}.btn-ok:hover{background:rgba(52,211,153,.18)}
+.btn-del{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.btn-sm{padding:4px 9px;font-size:11px}
+
+/* ── CONTENT ──────────────────────────────────────────────── */
+.body{flex:1;overflow-y:auto;padding:20px}
+.page{display:none}.page.on{display:block}
+
+/* ── STAT CARDS ───────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+.sc{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;transition:.2s}
+.sc:hover{border-color:var(--line2)}
+.sc .lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:7px}
+.sc .val{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+.sc .sub{font-size:10px;color:var(--tx3);margin-top:3px}
+.sc.a .val{color:var(--acc)}.sc.g .val{color:var(--grn)}.sc.r .val{color:var(--red)}.sc.m .val{color:var(--amb)}
+
+/* ── TABLE ────────────────────────────────────────────────── */
+.tcard{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.thead{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:10px;flex-wrap:wrap}
+.thead h3{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:13px;font-weight:700}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 14px;text-align:left;font-size:9px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:1.5px;background:var(--bg3);border-bottom:2px solid var(--acc);font-family:'Barlow Condensed','Arial Narrow',sans-serif}
+td{padding:9px 14px;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+code{background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)}
+
+/* ── TAGS ─────────────────────────────────────────────────── */
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.tg{background:rgba(52,211,153,.1);color:var(--grn)}
+.tr{background:rgba(248,113,113,.1);color:var(--red)}
+.tm{background:rgba(251,191,36,.1);color:var(--amb)}
+.ta{background:rgba(91,141,239,.1);color:var(--acc)}
+.tt{background:rgba(34,211,238,.1);color:var(--teal)}
+.tz{background:rgba(255,255,255,.06);color:var(--tx3)}
+
+/* ── MODAL ────────────────────────────────────────────────── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.ov.on{display:flex}
+.mod{background:var(--bg2);border:1px solid var(--line2);border-radius:14px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh)}
+.mh{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.mh h2{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:15px;font-weight:700}
+.mc{padding:18px 22px}
+.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+.xbtn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;padding:2px;line-height:1}.xbtn:hover{color:var(--tx)}
+
+/* ── FORM ─────────────────────────────────────────────────── */
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--line2);border-radius:var(--r2);padding:8px 11px;color:var(--tx);font-size:12.5px;font-family:'Nunito',Arial,sans-serif;outline:none;transition:.12s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(91,141,239,.1)}
+.fg select option{background:var(--bg3)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── ALERT ────────────────────────────────────────────────── */
+.al{padding:10px 14px;border-radius:var(--r2);margin-bottom:14px;font-size:12.5px;display:flex;gap:8px;align-items:flex-start}
+.al-m{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);color:var(--amb)}
+.al-g{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);color:var(--grn)}
+.al-r{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);color:var(--red)}
+
+/* ── FILTER CHIPS ─────────────────────────────────────────── */
+.chips{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--line2);background:var(--bg3);color:var(--tx2);transition:.12s}
+.chip:hover,.chip.on{background:rgba(91,141,239,.12);border-color:rgba(91,141,239,.3);color:var(--acc)}
+
+/* ── DASHBOARD ────────────────────────────────────────────── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.dsec h4{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.act-list{display:flex;flex-direction:column;gap:1px}
+.act{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--bg2);transition:.12s}
+.act:first-child{border-radius:var(--r) var(--r) 0 0}.act:last-child{border-radius:0 0 var(--r) var(--r)}
+.act:only-child{border-radius:var(--r)}
+.act:hover{background:var(--bg3)}
+.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.atx{flex:1;font-size:11.5px}.atx strong{font-weight:600}
+.atime{font-size:10px;color:var(--tx3);font-family:'DM Mono',monospace}
+.sol-card{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--amb);border-radius:var(--r2);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.sol-card.urg{border-left-color:var(--red)}
+
+/* ── TOAST ────────────────────────────────────────────────── */
+.tc{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--bg2);border:1px solid var(--line2);border-radius:var(--r2);padding:10px 14px;font-size:12.5px;display:flex;gap:9px;align-items:center;min-width:260px;animation:tin .25s ease;box-shadow:var(--sh)}
+.toast.s{border-left:3px solid var(--grn)}.toast.w{border-left:3px solid var(--amb)}.toast.e{border-left:3px solid var(--red)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── LOADING ──────────────────────────────────────────────── */
+.loading{text-align:center;padding:40px;color:var(--tx3)}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid var(--line2);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:36px;color:var(--tx3)}
+.empty .ei{font-size:32px;margin-bottom:8px}
+
+/* ── SCROLLBAR ────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* ── CONNECTION BANNER ────────────────────────────────────── */
+.conn-banner{background:var(--bg2);border:1px solid var(--line2);border-radius:var(--r);padding:20px 24px;margin-bottom:20px;display:flex;align-items:flex-start;gap:16px}
+.conn-banner .icon{font-size:28px;flex-shrink:0}
+.conn-banner h3{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+.conn-banner p{font-size:12px;color:var(--tx2);line-height:1.6}
+.conn-banner a{color:var(--acc);text-decoration:none}.conn-banner a:hover{text-decoration:underline}
+.step{display:flex;align-items:flex-start;gap:10px;margin-top:8px;font-size:12px;color:var(--tx2)}
+.step-n{width:20px;height:20px;border-radius:50%;background:var(--acc);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo" style="background:linear-gradient(135deg,#017BC4,#002B4A);margin:-0px;padding:20px 16px 18px;border-bottom:1px solid rgba(150,186,208,.2)">
+    <div class="mark" style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:22px;font-weight:800;letter-spacing:1px;color:#fff">BiG <span style="color:#96BAD0">Inventarios</span></div>
+    <div class="sub" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:3px">Área de Innovación</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Principal</div>
+    <div class="sb-item on" onclick="go('dash',this)"><span class="ico">📊</span><span class="lbl">Dashboard</span></div>
+    <div class="sb-sec">Inventarios</div>
+    <div class="sb-item" onclick="go('info',this)"><span class="ico">💻</span><span class="lbl">Informática</span><span class="bdg" id="bdg-info" style="display:none">0</span></div>
+    <div class="sb-item" onclick="go('san',this)"><span class="ico">🏥</span><span class="lbl">Sanitario</span></div>
+    <div class="sb-item" onclick="go('cons',this)"><span class="ico">📦</span><span class="lbl">Consumibles</span></div>
+    <div class="sb-sec">Compras</div>
+    <div class="sb-item" onclick="go('ped',this)"><span class="ico">🛒</span><span class="lbl">Pedidos Oficina</span></div>
+    <div class="sb-item" onclick="go('sol',this)"><span class="ico">🔔</span><span class="lbl">Solicitudes</span><span class="bdg" id="bdg">0</span></div>
+    <div class="sb-sec">Historial</div>
+    <div class="sb-item" onclick="go('mov',this)"><span class="ico">📋</span><span class="lbl">Movimientos</span></div>
+    <div class="sb-sec">Configuración</div>
+    <div class="sb-item" onclick="go('cfg',this)"><span class="ico">⚙️</span><span class="lbl">Conexión Sheets</span></div>
+  </nav>
+  <div class="sb-foot">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div class="av">TA</div>
+      <div>
+        <div style="font-size:12px;font-weight:600">Tatiana</div>
+        <div style="font-size:10px;color:var(--tx3)">Innovación · BiG</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="bar">
+    <div class="bar-title" id="bar-title">Dashboard</div>
+    <div class="search-wrap"><span style="color:var(--tx3);font-size:13px">⌕</span><input type="text" placeholder="Buscar TAG, material, responsable…" id="gsearch" oninput="buscar(this.value)"></div>
+    <button class="btn btn-p btn-sm" onclick="abrirAdd()">+ Añadir</button>
+    <button class="btn btn-g btn-sm" id="btn-sync" onclick="syncAll()" title="Sincronizar con Google Sheets">↻ Sync</button>
+  </div>
+
+  <div class="body">
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="pg-dash">
+      <div class="stats" id="dash-stats"></div>
+      <div class="dash-grid">
+        <div class="dsec"><h4>🔔 Solicitudes Pendientes</h4><div id="dash-sol"></div></div>
+        <div class="dsec"><h4>📋 Últimos Movimientos</h4><div class="act-list" id="dash-mov"></div></div>
+      </div>
+      <div class="dsec"><h4>⚠️ Material Sanitario Fuera · Sin Retorno</h4><div id="dash-fuera"></div></div>
+      <div class="dsec" style="margin-top:16px"><h4>🚨 Equipos con Devolución Vencida (+7 días)</h4><div id="dash-vencidos"></div></div>
+    </div>
+
+    <!-- INFORMÁTICA -->
+    <div class="page" id="pg-info">
+      <div class="chips">
+        <span class="chip on" onclick="fInfo('all',this)">Todos</span>
+        <span class="chip" onclick="fInfo('disponible',this)">✅ Disponible</span>
+        <span class="chip" onclick="fInfo('prestado',this)">📤 Prestado</span>
+        <span class="chip" onclick="fInfo('averia',this)">🔧 Avería</span>
+        <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-g btn-sm" onclick="openM('m-prestamo')">📤 Préstamo</button>
+          <button class="btn btn-ok btn-sm" onclick="openM('m-devol')">📥 Devolución</button>
+          <button class="btn btn-p btn-sm" onclick="openM('m-equipo')">+ Equipo</button>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="thead"><h3>Equipos Informáticos</h3><span id="info-cnt" style="font-size:11px;color:var(--tx3)"></span></div>
+        <div class="twrap"><table><thead><tr><th>TAG</th><th>Tipo</th><th>Modelo</th><th>Proyecto</th><th>Ubicación</th><th>Responsable</th><th>Estado</th><th>Obs.</th><th></th></tr></thead><tbody id="tb-info"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SANITARIO -->
+    <div class="page" id="pg-san">
+      <div class="chips">
+        <span class="chip on" onclick="fSan('all',this)">Todos</span>
+        <span class="chip" onclick="fSan('disponible',this)">✅ En Tecnopole</span>
+        <span class="chip" onclick="fSan('fuera',this)">📤 Fuera</span>
+        <span class="chip" onclick="fSan('NO FUNGIBLE',this)">🏷 No Fungible</span>
+        <span class="chip" onclick="fSan('FUNGIBLE',this)">🔄 Fungible</span>
+        <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-g btn-sm" onclick="openM('m-san-sal')">📤 Salida</button>
+          <button class="btn btn-ok btn-sm" onclick="openM('m-san-ent')">📥 Entrada</button>
+          <button class="btn btn-p btn-sm" onclick="openM('m-san-new')">+ Material</button>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="thead"><h3>Material Sanitario</h3><span id="san-cnt" style="font-size:11px;color:var(--tx3)"></span></div>
+        <div class="twrap"><table><thead><tr><th>Material</th><th>Tipo</th><th>Total</th><th>Disponible</th><th>Fuera</th><th>Estado</th><th></th></tr></thead><tbody id="tb-san"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- CONSUMIBLES -->
+    <div class="page" id="pg-cons">
+      <div class="chips">
+        <span class="chip on" onclick="fCons('all',this)">Todos</span>
+        <span class="chip" onclick="fCons('ok',this)">✅ OK</span>
+        <span class="chip" onclick="fCons('bajo',this)">⚠️ Bajo</span>
+        <span class="chip" onclick="fCons('agotado',this)">🔴 Agotado</span>
+        <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-g btn-sm" onclick="openM('m-cons-sal')">📤 Salida</button>
+          <button class="btn btn-ok btn-sm" onclick="openM('m-cons-ent')">📥 Entrada</button>
+          <button class="btn btn-p btn-sm" onclick="openM('m-cons-new')">+ Artículo</button>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="thead"><h3>Consumibles de Cursos</h3></div>
+        <div class="twrap"><table><thead><tr><th>Artículo</th><th>Categoría</th><th>Stock</th><th>Mínimo</th><th>Unidad</th><th>Estado</th><th></th></tr></thead><tbody id="tb-cons"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div class="page" id="pg-ped">
+      <div class="al al-m"><span>💡</span><span>Los pedidos generados se registran como solicitud para Compras. No se inventaría stock de oficina.</span></div>
+      <div style="margin-bottom:16px"><button class="btn btn-p" onclick="openM('m-pedido')">+ Nuevo Pedido de Oficina</button></div>
+      <div class="tcard">
+        <div class="thead"><h3>Historial de Pedidos</h3></div>
+        <div class="twrap"><table><thead><tr><th>Fecha</th><th>Solicitante</th><th>Artículos</th><th>Urgencia</th><th>Estado</th></tr></thead><tbody id="tb-ped"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SOLICITUDES -->
+    <div class="page" id="pg-sol">
+      <div class="thead" style="background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px;border-radius:var(--r)">
+        <h3 style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:13px;font-weight:700">Solicitudes de Compra Pendientes</h3>
+        <button class="btn btn-g btn-sm" onclick="enviarCompras()">📧 Enviar a Compras</button>
+      </div>
+      <div class="tcard">
+        <div class="twrap"><table><thead><tr><th>Fecha</th><th>Módulo</th><th>Artículo</th><th>Cant.</th><th>Motivo</th><th>Urgencia</th><th>Estado</th><th></th></tr></thead><tbody id="tb-sol"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- MOVIMIENTOS -->
+    <div class="page" id="pg-mov">
+      <div class="chips">
+        <span class="chip on" onclick="fMov('all',this)">Todos</span>
+        <span class="chip" onclick="fMov('informatica',this)">💻 Informática</span>
+        <span class="chip" onclick="fMov('sanitario',this)">🏥 Sanitario</span>
+        <span class="chip" onclick="fMov('consumibles',this)">📦 Consumibles</span>
+        <span class="chip" onclick="fMov('pedidos',this)">🛒 Oficina</span>
+      </div>
+      <div class="tcard">
+        <div class="thead"><h3>Historial de Movimientos</h3></div>
+        <div class="twrap"><table><thead><tr><th>Fecha</th><th>Módulo</th><th>Tipo</th><th>Material/Equipo</th><th>Destino</th><th>Responsable</th><th>Cant.</th><th>Notas</th></tr></thead><tbody id="tb-mov"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN / CONEXIÓN -->
+    <div class="page" id="pg-cfg">
+      <div class="conn-banner">
+        <div class="icon">🔗</div>
+        <div style="flex:1">
+          <h3>Conectar con Google Sheets</h3>
+          <p>Esta app lee y escribe en tu Google Sheet <strong>BiG Inventarios · Área de Innovación</strong>. Para que funcione en modo multi-usuario necesitas publicar el Sheet y obtener una API Key.</p>
+          <div class="step"><div class="step-n">1</div><div>Abre tu <a href="https://docs.google.com/spreadsheets/d/1PsEEwR16EN1VnRqh6eyif87295QN4g9tAOP4-QfiFoU/edit" target="_blank">Google Sheet →</a></div></div>
+          <div class="step"><div class="step-n">2</div><div>Ve a <strong>Extensiones → Apps Script</strong> y pega el script de conexión que te proporciona Claude</div></div>
+          <div class="step"><div class="step-n">3</div><div>Despliega como <strong>Web App</strong> (acceso para cualquiera) y copia la URL aquí abajo</div></div>
+          <div class="step"><div class="step-n">4</div><div>¡Listo! La app sincronizará automáticamente cada vez que pulses ↻ Sync</div></div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="thead"><h3>⚙️ Parámetros de Conexión</h3></div>
+        <div style="padding:20px 22px">
+          <div class="fg">
+            <label>ID del Google Sheet</label>
+            <input type="text" id="cfg-sheetid" value="1PsEEwR16EN1VnRqh6eyif87295QN4g9tAOP4-QfiFoU" readonly style="font-family:'DM Mono',monospace;font-size:12px;color:var(--teal)">
+          </div>
+          <div class="fg">
+            <label>URL del Apps Script Web App (pega aquí cuando la tengas)</label>
+            <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/…/exec" oninput="saveConfig()">
+          </div>
+          <div class="fg">
+            <label>Email de Compras (para notificaciones)</label>
+            <input type="text" id="cfg-email" placeholder="compras@bigformacion.com" oninput="saveConfig()">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            <button class="btn btn-p" onclick="testConexion()">🔌 Probar Conexión</button>
+            <button class="btn btn-g" onclick="copyScript()">📋 Copiar Apps Script</button>
+          </div>
+          <div id="cfg-status" style="margin-top:12px;font-size:12px;color:var(--tx3)"></div>
+        </div>
+      </div>
+
+      <div class="tcard" style="margin-top:16px">
+        <div class="thead"><h3>📋 Apps Script para Google Sheets</h3><span style="font-size:11px;color:var(--tx3)">Pega esto en Extensiones → Apps Script</span></div>
+        <div style="padding:16px 20px">
+          <pre id="script-code" style="background:var(--bg3);border:1px solid var(--line);border-radius:var(--r2);padding:16px;font-size:11px;font-family:'DM Mono',monospace;color:var(--teal);overflow-x:auto;line-height:1.6;white-space:pre-wrap">// BiG Inventarios · Apps Script
+// Pega este código en Extensiones → Apps Script de tu Google Sheet
+// Luego: Implementar → Nueva implementación → Aplicación web
+// Ejecutar como: Yo | Quién tiene acceso: Cualquier usuario
+
+const SHEET_ID = '1PsEEwR16EN1VnRqh6eyif87295QN4g9tAOP4-QfiFoU';
+
+function doGet(e) {
+  const sheet = e.parameter.sheet || 'equipos_informatica';
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const ws = ss.getSheetByName(sheet);
+  if (!ws) return json({error: 'Hoja no encontrada: ' + sheet});
+  const rows = ws.getDataRange().getValues();
+  const headers = rows[0];
+  const data = rows.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = row[i]);
+    return obj;
+  });
+  return json({ok: true, data, sheet, total: data.length});
+}
+
+function doPost(e) {
+  const payload = JSON.parse(e.postData.contents);
+  const {sheet, action, row, rowIndex} = payload;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const ws = ss.getSheetByName(sheet);
+  if (!ws) return json({error: 'Hoja no encontrada'});
+  
+  if (action === 'append') {
+    const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
+    const newRow = headers.map(h => row[h] !== undefined ? row[h] : '');
+    ws.appendRow(newRow);
+    return json({ok: true, action: 'appended'});
+  }
+  
+  if (action === 'update' && rowIndex >= 0) {
+    const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
+    const updRow = headers.map(h => row[h] !== undefined ? row[h] : '');
+    ws.getRange(rowIndex + 2, 1, 1, updRow.length).setValues([updRow]);
+    return json({ok: true, action: 'updated'});
+  }
+  
+  return json({error: 'Acción no reconocida'});
+}
+
+function json(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALES ───────────────────────────────────────── -->
+
+<!-- NUEVO EQUIPO -->
+<div class="ov" id="m-equipo">
+  <div class="mod">
+    <div class="mh"><h2>💻 Nuevo Equipo</h2><button class="xbtn" onclick="closeM('m-equipo')">✕</button></div>
+    <div class="mc">
+      <div class="fr"><div class="fg"><label>TAG *</label><input id="eq-tag" placeholder="HP_AZUL_01, P_15…"></div><div class="fg"><label>Tipo *</label><select id="eq-tipo"><option>Portátil</option><option>Tablet</option><option>All-in-One</option><option>Proyector</option><option>Lector DNI</option><option>Periférico</option><option>Otro</option></select></div></div>
+      <div class="fg"><label>Modelo *</label><input id="eq-modelo" placeholder="HP Stream x360, Primux 15…"></div>
+      <div class="fr"><div class="fg"><label>Propietario</label><select id="eq-prop"><option>BiG</option><option>DOMUSVI</option><option>Otro</option></select></div><div class="fg"><label>Proyecto</label><input id="eq-proy" placeholder="COBIPE, DIXIGAL…"></div></div>
+      <div class="fr"><div class="fg"><label>Ubicación</label><input id="eq-ubic" placeholder="TECNOPOLE, SAN MARCOS…"></div><div class="fg"><label>Responsable</label><input id="eq-resp" placeholder="Nombre…"></div></div>
+      <div class="fg"><label>Estado</label><select id="eq-est"><option value="disponible">✅ Disponible</option><option value="prestado">📤 Prestado</option><option value="averia">🔧 Avería</option><option value="baja">❌ Baja</option></select></div>
+      <div class="fg"><label>Observaciones</label><textarea id="eq-obs" rows="2"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-equipo')">Cancelar</button><button class="btn btn-p" onclick="saveEquipo()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- PRÉSTAMO -->
+<div class="ov" id="m-prestamo">
+  <div class="mod">
+    <div class="mh"><h2>📤 Registrar Préstamo</h2><button class="xbtn" onclick="closeM('m-prestamo')">✕</button></div>
+    <div class="mc">
+      <div class="fg"><label>Equipo (TAG) *</label><select id="pr-tag" style="width:100%"></select></div>
+      <div class="fr"><div class="fg"><label>Responsable *</label><input id="pr-resp" placeholder="Nombre completo"></div><div class="fg"><label>Fecha Salida *</label><input type="date" id="pr-fecha"></div></div>
+      <div class="fg"><label>Destino / Centro</label><input id="pr-dest" placeholder="BeOne, Campolongo, Madrid…"></div>
+      <div class="fg"><label>Fecha Prevista Retorno</label><input type="date" id="pr-ret"></div>
+      <div class="fg"><label>Observaciones</label><textarea id="pr-obs" rows="2"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-prestamo')">Cancelar</button><button class="btn btn-p" onclick="savePrestamo()">Registrar</button></div>
+  </div>
+</div>
+
+<!-- DEVOLUCIÓN -->
+<div class="ov" id="m-devol">
+  <div class="mod">
+    <div class="mh"><h2>📥 Registrar Devolución</h2><button class="xbtn" onclick="closeM('m-devol')">✕</button></div>
+    <div class="mc">
+      <div class="fg"><label>Equipo (TAG) *</label><select id="dv-tag" style="width:100%"></select></div>
+      <div class="fr"><div class="fg"><label>Fecha Devolución *</label><input type="date" id="dv-fecha"></div><div class="fg"><label>Nueva Ubicación</label><input id="dv-ubic" placeholder="ARMARIO MURO…"></div></div>
+      <div class="fg"><label>Estado al Volver</label><select id="dv-est"><option value="disponible">✅ Correcto</option><option value="averia">🔧 Necesita Revisión</option></select></div>
+      <div class="fg"><label>Observaciones</label><textarea id="dv-obs" rows="2"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-devol')">Cancelar</button><button class="btn btn-ok" onclick="saveDevol()">Confirmar</button></div>
+  </div>
+</div>
+
+<!-- NUEVO MATERIAL SANITARIO -->
+<div class="ov" id="m-san-new">
+  <div class="mod">
+    <div class="mh"><h2>🏥 Nuevo Material Sanitario</h2><button class="xbtn" onclick="closeM('m-san-new')">✕</button></div>
+    <div class="mc">
+      <div class="fr"><div class="fg"><label>Nombre *</label><input id="sn-nom" placeholder="AMBU, DESA, Vendas…"></div><div class="fg"><label>Tipo *</label><select id="sn-tipo"><option value="NO FUNGIBLE">No Fungible</option><option value="FUNGIBLE">Fungible</option></select></div></div>
+      <div class="fr"><div class="fg"><label>Cantidad Total *</label><input type="number" id="sn-cant" min="1" value="1"></div><div class="fg"><label>Proyecto</label><input id="sn-proy" placeholder="AFD GALICIA, AULAS…"></div></div>
+      <div class="fg"><label>Observaciones</label><textarea id="sn-obs" rows="2"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-san-new')">Cancelar</button><button class="btn btn-p" onclick="saveSanNew()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- SALIDA SANITARIO -->
+<div class="ov" id="m-san-sal">
+  <div class="mod">
+    <div class="mh"><h2>📤 Salida Material Sanitario</h2><button class="xbtn" onclick="closeM('m-san-sal')">✕</button></div>
+    <div class="mc">
+      <div class="fg"><label>Material *</label><select id="ss-mat" style="width:100%"></select></div>
+      <div class="fr"><div class="fg"><label>Cantidad *</label><input type="number" id="ss-cant" min="1" value="1"></div><div class="fg"><label>Fecha *</label><input type="date" id="ss-fecha"></div></div>
+      <div class="fr"><div class="fg"><label>Centro Destino *</label><input id="ss-dest" placeholder="BeOne, Campolongo…"></div><div class="fg"><label>Responsable</label><input id="ss-resp" placeholder="Diana, Paula P…"></div></div>
+      <div class="fr"><div class="fg"><label>Retorno Previsto</label><input type="date" id="ss-ret"></div><div class="fg"><label>Proyecto</label><input id="ss-proy" placeholder="AFD GALICIA…"></div></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-san-sal')">Cancelar</button><button class="btn btn-p" onclick="saveSanSal()">Registrar Salida</button></div>
+  </div>
+</div>
+
+<!-- ENTRADA SANITARIO -->
+<div class="ov" id="m-san-ent">
+  <div class="mod">
+    <div class="mh"><h2>📥 Entrada Material Sanitario</h2><button class="xbtn" onclick="closeM('m-san-ent')">✕</button></div>
+    <div class="mc">
+      <div class="fg"><label>Material *</label><select id="se-mat" style="width:100%"></select></div>
+      <div class="fr"><div class="fg"><label>Cantidad *</label><input type="number" id="se-cant" min="1" value="1"></div><div class="fg"><label>Fecha *</label><input type="date" id="se-fecha"></div></div>
+      <div class="fg"><label>Responsable</label><input id="se-resp" placeholder="Diana, Paula P…"></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-san-ent')">Cancelar</button><button class="btn btn-ok" onclick="saveSanEnt()">Registrar Entrada</button></div>
+  </div>
+</div>
+
+<!-- NUEVO CONSUMIBLE -->
+<div class="ov" id="m-cons-new">
+  <div class="mod">
+    <div class="mh"><h2>📦 Nuevo Artículo Consumible</h2><button class="xbtn" onclick="closeM('m-cons-new')">✕</button></div>
+    <div class="mc">
+      <div class="fr"><div class="fg"><label>Artículo *</label><input id="cn-nom" placeholder="Bolígrafos, Folios…"></div><div class="fg"><label>Categoría</label><select id="cn-cat"><option>Papelería</option><option>Material didáctico</option><option>Sanitario consumible</option><option>Informático</option><option>Higiene</option><option>Otro</option></select></div></div>
+      <div class="fr"><div class="fg"><label>Stock Actual *</label><input type="number" id="cn-stock" min="0" value="0"></div><div class="fg"><label>Stock Mínimo *</label><input type="number" id="cn-min" min="0" value="5"></div></div>
+      <div class="fg"><label>Unidad</label><input id="cn-uni" placeholder="unidades, cajas, resmas…"></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-cons-new')">Cancelar</button><button class="btn btn-p" onclick="saveConsNew()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- ENTRADA CONSUMIBLE -->
+<div class="ov" id="m-cons-ent">
+  <div class="mod">
+    <div class="mh"><h2>📥 Entrada Stock Consumible</h2><button class="xbtn" onclick="closeM('m-cons-ent')">✕</button></div>
+    <div class="mc">
+      <div class="fg"><label>Artículo *</label><select id="ce-art" style="width:100%"></select></div>
+      <div class="fr"><div class="fg"><label>Cantidad *</label><input type="number" id="ce-cant" min="1" value="1"></div><div class="fg"><label>Fecha</label><input type="date" id="ce-fecha"></div></div>
+      <div class="fg"><label>Notas</label><input id="ce-obs" placeholder="Proveedor, nº factura…"></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-cons-ent')">Cancelar</button><button class="btn btn-ok" onclick="moveStock(1)">Añadir Stock</button></div>
+  </div>
+</div>
+
+<!-- SALIDA CONSUMIBLE -->
+<div class="ov" id="m-cons-sal">
+  <div class="mod">
+    <div class="mh"><h2>📤 Salida Stock Consumible</h2><button class="xbtn" onclick="closeM('m-cons-sal')">✕</button></div>
+    <div class="mc">
+      <div class="fg"><label>Artículo *</label><select id="cs-art" style="width:100%"></select></div>
+      <div class="fr"><div class="fg"><label>Cantidad *</label><input type="number" id="cs-cant" min="1" value="1"></div><div class="fg"><label>Fecha</label><input type="date" id="cs-fecha"></div></div>
+      <div class="fg"><label>Motivo / Curso</label><input id="cs-obs" placeholder="Nombre del curso…"></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-cons-sal')">Cancelar</button><button class="btn btn-del" onclick="moveStock(-1)">Retirar Stock</button></div>
+  </div>
+</div>
+
+<!-- PEDIDO OFICINA -->
+<div class="ov" id="m-pedido">
+  <div class="mod">
+    <div class="mh"><h2>🛒 Nuevo Pedido de Oficina</h2><button class="xbtn" onclick="closeM('m-pedido')">✕</button></div>
+    <div class="mc">
+      <div class="fr"><div class="fg"><label>Solicitante *</label><input id="pd-sol" placeholder="Tu nombre"></div><div class="fg"><label>Fecha</label><input type="date" id="pd-fecha"></div></div>
+      <div class="fg"><label>Artículos (uno por línea: cantidad + descripción)</label><textarea id="pd-arts" rows="5" placeholder="2 cajas bolígrafos azules&#10;1 resma folios A4 80g&#10;5 carpetas archivadoras A4…"></textarea></div>
+      <div class="fr"><div class="fg"><label>Urgencia</label><select id="pd-urg"><option value="normal">Normal</option><option value="urgente">🔴 Urgente</option></select></div><div class="fg"><label>Observaciones</label><input id="pd-obs" placeholder="Proveedor, referencia…"></div></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-pedido')">Cancelar</button><button class="btn btn-p" onclick="savePedido()">Generar → Compras</button></div>
+  </div>
+</div>
+
+<!-- EDITAR TOTAL SANITARIO -->
+<div class="ov" id="m-san-edit">
+  <div class="mod">
+    <div class="mh"><h2>✏️ Editar Material Sanitario</h2><button class="xbtn" onclick="closeM('m-san-edit')">✕</button></div>
+    <div class="mc">
+      <div style="background:var(--bg3);border-radius:var(--r2);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--teal);font-weight:600" id="sse-nombre"></div>
+      <input type="hidden" id="sse-id">
+      <div class="fr">
+        <div class="fg"><label>Total Unidades</label><input type="number" id="sse-total" min="1"></div>
+        <div class="fg"><label>Tipo</label>
+          <select id="sse-tipo">
+            <option value="NO FUNGIBLE">No Fungible</option>
+            <option value="FUNGIBLE">Fungible</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Observaciones</label><textarea id="sse-obs" rows="2"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeM('m-san-edit')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveEditSan()">Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDITAR CONSUMIBLE -->
+<div class="ov" id="m-cons-edit">
+  <div class="mod">
+    <div class="mh"><h2>✏️ Editar Consumible</h2><button class="xbtn" onclick="closeM('m-cons-edit')">✕</button></div>
+    <div class="mc">
+      <div style="background:var(--bg3);border-radius:var(--r2);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--teal);font-weight:600" id="ec-nombre"></div>
+      <input type="hidden" id="ec-id">
+      <div class="fg"><label>Categoría</label>
+        <select id="ec-cat">
+          <option>Papelería</option>
+          <option>Material didáctico</option>
+          <option>Sanitario consumible</option>
+          <option>Informático</option>
+          <option>Higiene</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Stock Actual</label><input type="number" id="ec-stock" min="0"></div>
+        <div class="fg"><label>Stock Mínimo</label><input type="number" id="ec-min" min="0"></div>
+      </div>
+      <div class="fg"><label>Unidad de Medida</label><input id="ec-uni" placeholder="unidades, cajas, resmas…"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeM('m-cons-edit')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveEditCons()">Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDITAR EQUIPO -->
+<div class="ov" id="m-editar">
+  <div class="mod">
+    <div class="mh"><h2>✏️ Editar Equipo</h2><button class="xbtn" onclick="closeM('m-editar')">✕</button></div>
+    <div class="mc">
+      <div style="background:var(--bg3);border-radius:var(--r2);padding:10px 14px;margin-bottom:16px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal)" id="ed-tag"></div>
+      <input type="hidden" id="ed-id">
+      <div class="fg"><label>Proyecto</label><input id="ed-proyecto" placeholder="COBIPE, DIXIGAL, AFD…"></div>
+      <div class="fr"><div class="fg"><label>Ubicación</label><input id="ed-ubicacion" placeholder="TECNOPOLE, BEONE LUGO…"></div><div class="fg"><label>Zona / Armario</label><input id="ed-zona" placeholder="ARMARIO MURO, AULA TIC…"></div></div>
+      <div class="fr"><div class="fg"><label>Responsable</label><input id="ed-responsable" placeholder="Nombre…"></div><div class="fg"><label>Estado</label><select id="ed-estado"><option value="disponible">✅ Disponible</option><option value="prestado">📤 Prestado</option><option value="averia">🔧 Avería</option><option value="baja">❌ Baja</option></select></div></div>
+      <div class="fg"><label>Observaciones</label><textarea id="ed-obs" rows="2" placeholder="Notas, incidencias, accesorios…"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeM('m-editar')">Cancelar</button><button class="btn btn-p" onclick="saveEditar()">Guardar Cambios</button></div>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const SHEET_ID = '1PsEEwR16EN1VnRqh6eyif87295QN4g9tAOP4-QfiFoU';
+const SHEETS = {
+  info:  'equipos_informatica',
+  san:   'material_sanitario',
+  cons:  'consumibles_cursos',
+  ped:   'pedidos_oficina'
+};
+// Alias cortos
+const SH = SHEETS;
+
+// ── ESTADO LOCAL ─────────────────────────────────────────────
+let DB = {
+  equipos: [], sanitario: [], consumibles: [], pedidos: [],
+  solicitudes: [], movimientos: [],
+  _ni: {eq:1,san:1,cons:1,ped:1,sol:1,mov:1}
+};
+let cfgUrl = localStorage.getItem('big_apps_url') || '';
+let cfgEmail = localStorage.getItem('big_email') || 'compras@bigformacion.com';
+
+// ── DATOS DEMO (mientras no hay Apps Script) ─────────────────
+function loadDemo(){
+  DB.equipos = [
+    {id:1,tag:'HP_AZUL_01',tipo:'Portátil',modelo:'HP hs3110 Azul',propietario:'BiG',proyecto:'COBIPE',ubicacion:'INNOVACIÓN',zona:'TECNOPOLE',responsable:'---',estado:'disponible',obs:'Asignado lector_38'},
+    {id:2,tag:'P_29',tipo:'Portátil',modelo:'Primux 15 W11',propietario:'BiG',proyecto:'CREISS',ubicacion:'INNOVACIÓN',zona:'TECNOPOLE',responsable:'TATIANA',estado:'prestado',obs:'Mouse P_29'},
+    {id:3,tag:'P_37',tipo:'Portátil',modelo:'Primux 15 W11',propietario:'BiG',proyecto:'OFICINA',ubicacion:'OFICINA',zona:'TECNOPOLE',responsable:'TATIANA',estado:'prestado',obs:'FIRMAS 2'},
+    {id:4,tag:'ACER_12',tipo:'Proyector',modelo:'Acer X1128H',propietario:'BiG',proyecto:'DIXIGOU/CADI',ubicacion:'INNOVACIÓN',zona:'TECNOPOLE',responsable:'OSCAR',estado:'disponible',obs:''},
+    {id:5,tag:'LECTOR_39',tipo:'Lector DNI',modelo:'TOOQ DNI',propietario:'BiG',proyecto:'COBIPE',ubicacion:'ARMARIO TATY',zona:'TECNOPOLE',responsable:'TATIANA',estado:'disponible',obs:''},
+    {id:6,tag:'HP_ROJO_05',tipo:'Portátil',modelo:'HP hs3110 Rojo',propietario:'BiG',proyecto:'COBIPE',ubicacion:'INNOVACIÓN',zona:'TECNOPOLE',responsable:'---',estado:'averia',obs:'Asignado lector_13'},
+    {id:7,tag:'DOMUSVI_LE_14',tipo:'Portátil',modelo:'Lenovo IdeaPad 330',propietario:'DOMUSVI',proyecto:'ACUERDO MARCO',ubicacion:'MADRID - LEGANÉS',zona:'MADRID',responsable:'ANGIE',estado:'prestado',obs:'Mouse asignado'},
+    {id:8,tag:'MAC_01',tipo:'Portátil',modelo:'MacBook Pro',propietario:'BiG',proyecto:'OFICINA',ubicacion:'ARMARIO SERGIO',zona:'TECNOPOLE',responsable:'---',estado:'disponible',obs:''},
+    {id:9,tag:'P_25',tipo:'Portátil',modelo:'Primux 15 W11',propietario:'BiG',proyecto:'COBIPE',ubicacion:'BEONE LUGO',zona:'LUGO',responsable:'DIANA',estado:'prestado',obs:'Asignado lector_24'},
+    {id:10,tag:'HP_27_OFI_1',tipo:'All-in-One',modelo:'HP All-in-One 27',propietario:'BiG',proyecto:'OFICINA',ubicacion:'OFICINA',zona:'TECNOPOLE',responsable:'SANDRA ARAUJO',estado:'disponible',obs:''},
+  ];
+  DB.sanitario = [
+    {id:1,nombre:'AMBU',tipo:'NO FUNGIBLE',total:3,fuera:1,proyecto:'AFD GALICIA',obs:''},
+    {id:2,nombre:'DESA',tipo:'NO FUNGIBLE',total:2,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:3,nombre:'MUÑECO ADULTO',tipo:'NO FUNGIBLE',total:2,fuera:1,proyecto:'AFD GALICIA',obs:''},
+    {id:4,nombre:'MUÑECO BEBÉ',tipo:'NO FUNGIBLE',total:2,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:5,nombre:'COLLARÍN RÍGIDO',tipo:'NO FUNGIBLE',total:2,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:6,nombre:'COLLARÍN BLANDO',tipo:'NO FUNGIBLE',total:2,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:7,nombre:'BOTIQUÍN',tipo:'NO FUNGIBLE',total:3,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:8,nombre:'GLUCÓMETRO',tipo:'NO FUNGIBLE',total:3,fuera:0,proyecto:'AFD GALICIA',obs:'Sinocare'},
+    {id:9,nombre:'FONENDOSCOPIO',tipo:'NO FUNGIBLE',total:1,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:10,nombre:'TENSIÓMETRO',tipo:'NO FUNGIBLE',total:1,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:11,nombre:'PULSIOXÍMETRO PULOX',tipo:'NO FUNGIBLE',total:2,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:12,nombre:'TABLERO ESPINAL',tipo:'NO FUNGIBLE',total:1,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:13,nombre:'CÁNULAS DE GUEDEL',tipo:'NO FUNGIBLE',total:6,fuera:0,proyecto:'AFD GALICIA',obs:'Tamaños 8,9,10'},
+    {id:14,nombre:'VENDA CREPÉ GRANDE',tipo:'FUNGIBLE',total:8,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:15,nombre:'VENDA CREPÉ PEQUEÑA',tipo:'FUNGIBLE',total:6,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:16,nombre:'GASAS',tipo:'FUNGIBLE',total:4,fuera:0,proyecto:'AFD GALICIA',obs:''},
+    {id:17,nombre:'TERMÓMETROS',tipo:'NO FUNGIBLE',total:5,fuera:0,proyecto:'AFD GALICIA',obs:'4 Morris + 1 Geratherm'},
+    {id:18,nombre:'FÉRULAS ANATÓMICAS',tipo:'NO FUNGIBLE',total:1,fuera:0,proyecto:'AFD GALICIA',obs:''},
+  ];
+  DB.consumibles = [];
+  DB.movimientos = [];
+  DB._ni = {eq:11,san:19,cons:1,ped:1,sol:1,mov:1};
+  checkMinimos();
+  updateBdg();
+}
+
+// ── SYNC CON GOOGLE SHEETS ──────────────────────────────────
+async function syncAll(){
+  if(!cfgUrl){toast('Configura la URL del Apps Script en ⚙️ Conexión Sheets','w');return;}
+  const btn = document.getElementById('btn-sync');
+  btn.textContent = '↻ Sincronizando…'; btn.disabled = true;
+  try {
+    const [eRes, sRes] = await Promise.all([
+      fetch(`${cfgUrl}?sheet=${SHEETS.info}`),
+      fetch(`${cfgUrl}?sheet=${SHEETS.san}`)
+    ]);
+    const eData = await eRes.json();
+    const sData = await sRes.json();
+    if(eData.ok) parseEquipos(eData.data);
+    if(sData.ok) parseSanitario(sData.data);
+    renderPage(currentPage);
+    toast('Sincronización completa ✓','s');
+  } catch(e){
+    toast('Error de conexión. Comprueba la URL del Apps Script.','e');
+  }
+  btn.textContent = '↻ Sync'; btn.disabled = false;
+}
+
+async function pushRow(sheet, row){
+  if(!cfgUrl) return;
+  try {
+    await fetch(cfgUrl, {method:'POST',body:JSON.stringify({sheet,action:'append',row})});
+  } catch(e){ console.warn('Push falló, datos solo en local'); }
+}
+
+async function updateRow(sheet, keyField, keyValue, row){
+  if(!cfgUrl) return;
+  try {
+    const res = await fetch(cfgUrl, {method:'POST',body:JSON.stringify({sheet,action:'update',keyField,keyValue,row})});
+    const data = await res.json();
+    if(!data.ok) console.warn('Update falló:', data.error);
+  } catch(e){ console.warn('Update falló, datos solo en local'); }
+}
+
+function parseEquipos(rows){
+  DB.equipos = rows.map((r,i)=>({
+    id:i+1,tag:r.TAG||r.tag||'',tipo:r.TIPO||r.tipo||'',modelo:r.MODELO||r.modelo||'',
+    propietario:r.PROPIETARIO||'',proyecto:r.PROYECTO||'',ubicacion:r.UBICACION||'',
+    zona:r.ZONA||'',responsable:r.RESPONSABLE||'',estado:(r.ESTADO||'disponible').toLowerCase(),
+    obs:r.OBSERVACIONES||''
+  })).filter(e=>e.tag);
+}
+function parseSanitario(rows){
+  const map = {};
+  rows.forEach(r=>{
+    const nom = (r.MATERIAL||'').toUpperCase();
+    if(!nom) return;
+    if(!map[nom]) map[nom]={nombre:nom,tipo:r.TIPO||'NO FUNGIBLE',total:0,fuera:0,proyecto:r.PROYECTO||'',obs:''};
+    map[nom].total += parseInt(r.CANTIDAD)||1;
+    if(r.EN_USO==='SÍ'||r.EN_USO==='SI') map[nom].fuera += parseInt(r.CANTIDAD_ENVIADA)||1;
+  });
+  DB.sanitario = Object.values(map).map((s,i)=>({...s,id:i+1}));
+}
+
+// ── NAVEGACIÓN ───────────────────────────────────────────────
+let currentPage = 'dash';
+const titles = {dash:'Dashboard',info:'💻 Inventario Informático',san:'🏥 Material Sanitario',cons:'📦 Consumibles de Cursos',ped:'🛒 Pedidos de Oficina',sol:'🔔 Solicitudes de Compra',mov:'📋 Historial de Movimientos',cfg:'⚙️ Conexión Google Sheets'};
+
+function go(pg, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg-'+pg).classList.add('on');
+  if(el) el.classList.add('on');
+  document.getElementById('bar-title').textContent = titles[pg]||pg;
+  currentPage = pg;
+  renderPage(pg);
+}
+function renderPage(pg){
+  if(pg==='dash') renderDash();
+  else if(pg==='info') renderInfo();
+  else if(pg==='san') renderSan();
+  else if(pg==='cons') renderCons();
+  else if(pg==='ped') renderPed();
+  else if(pg==='sol') renderSol();
+  else if(pg==='mov') renderMov();
+  else if(pg==='cfg') renderCfg();
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function renderDash(){
+  const tot=DB.equipos.length, prest=DB.equipos.filter(e=>e.estado==='prestado').length;
+  const aver=DB.equipos.filter(e=>e.estado==='averia').length;
+  const sanFuera=DB.sanitario.reduce((a,s)=>a+s.fuera,0);
+  const bajo=DB.consumibles.filter(c=>c.stock<=c.minimo).length;
+  const solP=DB.solicitudes.filter(s=>s.estado==='pendiente').length;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="sc a"><div class="lbl">Equipos</div><div class="val">${tot}</div><div class="sub">Informática</div></div>
+    <div class="sc m"><div class="lbl">Prestados</div><div class="val">${prest}</div><div class="sub">En circulación</div></div>
+    <div class="sc r"><div class="lbl">En Avería</div><div class="val">${aver}</div><div class="sub">Revisar</div></div>
+    <div class="sc m"><div class="lbl">San. Fuera</div><div class="val">${sanFuera}</div><div class="sub">unidades</div></div>
+    <div class="sc ${bajo>0?'r':'g'}"><div class="lbl">Stock Bajo</div><div class="val">${bajo}</div><div class="sub">artículos</div></div>
+    <div class="sc ${solP>0?'r':'g'}"><div class="lbl">Solicitudes</div><div class="val">${solP}</div><div class="sub">pendientes</div></div>`;
+  const pend=DB.solicitudes.filter(s=>s.estado==='pendiente');
+  document.getElementById('dash-sol').innerHTML=pend.length===0
+    ?'<div class="empty"><div class="ei">✅</div><p>Sin solicitudes pendientes</p></div>'
+    :pend.slice(0,5).map(s=>`<div class="sol-card ${s.urgencia==='urgente'?'urg':''}">
+        <span style="font-size:18px">${s.urgencia==='urgente'?'🔴':'🟡'}</span>
+        <div style="flex:1"><div style="font-size:12.5px;font-weight:600">${s.articulo}</div><div style="font-size:11px;color:var(--tx3)">${s.modulo} · ${s.motivo}</div></div>
+        <span class="tag tm">${s.urgencia}</span></div>`).join('');
+  const movs=[...DB.movimientos].reverse().slice(0,6);
+  const cols={Salida:'var(--red)',Préstamo:'var(--amb)',Entrada:'var(--grn)',Devolución:'var(--acc)'};
+  document.getElementById('dash-mov').innerHTML=movs.length===0
+    ?'<div class="empty"><p>Sin movimientos</p></div>'
+    :movs.map(m=>`<div class="act"><div class="adot" style="background:${cols[m.tipo]||'#666'}"></div><div class="atx"><strong>${m.tipo}</strong> ${m.material} → ${m.destino||'---'}</div><div class="atime">${m.fecha}</div></div>`).join('');
+  const fuera=DB.sanitario.filter(s=>s.fuera>0);
+  document.getElementById('dash-fuera').innerHTML=fuera.length===0
+    ?'<div class="empty"><div class="ei">✅</div><p>Todo en Tecnopole</p></div>'
+    :`<div class="tcard"><div class="twrap"><table><thead><tr><th>Material</th><th>Tipo</th><th>Fuera</th><th>Proyecto</th></tr></thead><tbody>${fuera.map(s=>`<tr><td><strong>${s.nombre}</strong></td><td><span class="tag ${s.tipo==='FUNGIBLE'?'tt':'ta'}">${s.tipo}</span></td><td><span class="tag tm">${s.fuera}</span></td><td style="font-size:11px;color:var(--tx3)">${s.proyecto}</td></tr>`).join('')}</tbody></table></div></div>`;
+  // Equipos vencidos
+  const vencidos = getEquiposVencidos();
+  const vDiv = document.getElementById('dash-vencidos');
+  if(vDiv) vDiv.innerHTML = vencidos.length===0
+    ?'<div class="empty"><div class="ei">✅</div><p>Sin devoluciones vencidas</p></div>'
+    :vencidos.map(e=>`<div class="sol-card urg">
+        <span style="font-size:18px">🚨</span>
+        <div style="flex:1">
+          <div style="font-size:12.5px;font-weight:600">${e.tag} — ${e.modelo}</div>
+          <div style="font-size:11px;color:var(--tx3)">Responsable: ${e.responsable} · Retorno previsto: ${e.retorno} · <strong style="color:var(--red)">${e.diasRetraso} días de retraso</strong></div>
+        </div>
+        <span class="tag tr">Vencido</span></div>`).join('');
+  updateBdgInfo();
+}
+
+// ── INFORMÁTICA ──────────────────────────────────────────────
+let fInfoF='all';
+function fInfo(f,el){fInfoF=f;document.querySelectorAll('#pg-info .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderInfo();}
+function renderInfo(q=''){
+  let d=DB.equipos;
+  if(fInfoF!=='all') d=d.filter(e=>e.estado===fInfoF);
+  if(q) d=d.filter(e=>JSON.stringify(e).toLowerCase().includes(q));
+  document.getElementById('info-cnt').textContent=`${d.length} equipos`;
+  const em={disponible:'<span class="tag tg">✅ Disponible</span>',prestado:'<span class="tag tm">📤 Prestado</span>',averia:'<span class="tag tr">🔧 Avería</span>',baja:'<span class="tag tz">❌ Baja</span>'};
+  document.getElementById('tb-info').innerHTML=d.length===0
+    ?'<tr><td colspan="9"><div class="empty"><div class="ei">💻</div><p>No hay equipos</p></div></td></tr>'
+    :d.map(e=>`<tr>
+      <td><code>${e.tag}</code></td>
+      <td><span class="tag tz">${e.tipo}</span></td>
+      <td>${e.modelo}</td>
+      <td style="font-size:11px;color:var(--tx3)">${e.proyecto}</td>
+      <td>${e.ubicacion}<br><span style="font-size:10px;color:var(--tx3)">${e.zona}</span></td>
+      <td>${e.responsable}</td>
+      <td>${em[e.estado]||e.estado}</td>
+      <td style="max-width:140px;font-size:11px;color:var(--tx3)">${e.obs||'—'}</td>
+      <td><button class="btn btn-g btn-sm" onclick="editEquipo(${e.id})">✏️</button></td></tr>`).join('');
+}
+
+function editEquipo(id){
+  const e=DB.equipos.find(x=>x.id===id);if(!e)return;
+  document.getElementById('ed-id').value=e.id;
+  document.getElementById('ed-tag').textContent=e.tag+' — '+e.modelo;
+  document.getElementById('ed-proyecto').value=e.proyecto||'';
+  document.getElementById('ed-ubicacion').value=e.ubicacion||'';
+  document.getElementById('ed-zona').value=e.zona||'';
+  document.getElementById('ed-responsable').value=e.responsable||'';
+  document.getElementById('ed-estado').value=e.estado||'disponible';
+  document.getElementById('ed-obs').value=e.obs||'';
+  openM('m-editar');
+}
+
+function saveEditar(){
+  const id=parseInt(document.getElementById('ed-id').value);
+  const e=DB.equipos.find(x=>x.id===id);if(!e)return;
+  e.proyecto=v('ed-proyecto');
+  e.ubicacion=v('ed-ubicacion');
+  e.zona=v('ed-zona');
+  e.responsable=v('ed-responsable');
+  e.estado=v('ed-estado');
+  e.obs=v('ed-obs');
+  // Actualizar fila en Google Sheet por TAG
+  updateRow(SHEETS.info,'TAG',e.tag,{
+    PROYECTO:e.proyecto,
+    UBICACION:e.ubicacion,
+    ZONA:e.zona,
+    RESPONSABLE:e.responsable,
+    ESTADO:e.estado,
+    OBSERVACIONES:e.obs
+  });
+  closeM('m-editar');
+  renderInfo();
+  renderDash();
+  toast(`${e.tag} actualizado en Google Sheets ✓`,'s');
+}
+
+// ── SANITARIO ────────────────────────────────────────────────
+let fSanF='all';
+function fSan(f,el){fSanF=f;document.querySelectorAll('#pg-san .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderSan();}
+function renderSan(q=''){
+  let d=DB.sanitario;
+  if(fSanF==='disponible') d=d.filter(s=>s.fuera<s.total);
+  else if(fSanF==='fuera') d=d.filter(s=>s.fuera>0);
+  else if(fSanF==='NO FUNGIBLE') d=d.filter(s=>s.tipo==='NO FUNGIBLE');
+  else if(fSanF==='FUNGIBLE') d=d.filter(s=>s.tipo==='FUNGIBLE');
+  if(q) d=d.filter(s=>JSON.stringify(s).toLowerCase().includes(q));
+  document.getElementById('san-cnt').textContent=`${d.length} artículos`;
+  document.getElementById('tb-san').innerHTML=d.length===0
+    ?'<tr><td colspan="8"><div class="empty"><div class="ei">🏥</div><p>No hay material</p></div></td></tr>'
+    :d.map(s=>{
+      const disp=s.total-s.fuera;
+      const est=s.fuera===0?'<span class="tag tg">En Tecnopole</span>':s.fuera>=s.total?'<span class="tag tr">Todo Fuera</span>':'<span class="tag tm">Parcial</span>';
+      return `<tr>
+        <td><strong>${s.nombre}</strong></td>
+        <td><span class="tag ${s.tipo==='FUNGIBLE'?'tt':'ta'}">${s.tipo}</span></td>
+        <td style="text-align:center;font-weight:600">${s.total}</td>
+        <td style="text-align:center;font-weight:600;color:${disp>0?'var(--grn)':'var(--red)'}">${disp}</td>
+        <td style="text-align:center">${s.fuera>0?`<span style="color:var(--amb);font-weight:600">${s.fuera}</span>`:'—'}</td>
+        <td style="font-size:11px;color:var(--tx3)">${s.proyecto}</td>
+        <td>${est}</td>
+        <td style="display:flex;gap:5px">
+          <button class="btn btn-g btn-sm" onclick="quickSalSan(${s.id})" title="Salida">📤</button>
+          <button class="btn btn-ok btn-sm" onclick="quickEntSan(${s.id})" title="Entrada">📥</button>
+        </td></tr>`;
+    }).join('');
+}
+function quickSalSan(id){const m=DB.sanitario.find(s=>s.id===id);if(m){document.getElementById('ss-mat').value=m.id;}openM('m-san-sal');}
+function quickEntSan(id){const m=DB.sanitario.find(s=>s.id===id);if(m){document.getElementById('se-mat').value=m.id;}openM('m-san-ent');}
+
+function editSan(id){
+  const m=DB.sanitario.find(s=>s.id===id);if(!m)return;
+  document.getElementById('sse-id').value=m.id;
+  document.getElementById('sse-nombre').textContent=m.nombre;
+  document.getElementById('sse-total').value=m.total;
+  document.getElementById('sse-tipo').value=m.tipo;
+  document.getElementById('sse-obs').value=m.obs||'';
+  openM('m-san-edit');
+}
+
+function saveEditSan(){
+  const id=parseInt(document.getElementById('sse-id').value);
+  const m=DB.sanitario.find(s=>s.id===id);if(!m)return;
+  m.total=parseInt(document.getElementById('sse-total').value)||m.total;
+  m.tipo=document.getElementById('sse-tipo').value;
+  m.obs=document.getElementById('sse-obs').value;
+  updateRow(SHEETS.san,'MATERIAL',m.nombre,{TOTAL:m.total,DISPONIBLE:m.total-m.fuera,TIPO:m.tipo,ESTADO:sanEstado(m),OBSERVACIONES:m.obs});
+  closeM('m-san-edit');renderSan();toast(`${m.nombre} actualizado en Sheets ✓`,'s');
+}
+
+// ── CONSUMIBLES ──────────────────────────────────────────────
+let fConsF='all';
+function fCons(f,el){fConsF=f;document.querySelectorAll('#pg-cons .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderCons();}
+function renderCons(q=''){
+  let d=DB.consumibles;
+  if(fConsF==='ok') d=d.filter(c=>c.stock>c.minimo);
+  else if(fConsF==='bajo') d=d.filter(c=>c.stock>0&&c.stock<=c.minimo);
+  else if(fConsF==='agotado') d=d.filter(c=>c.stock===0);
+  if(q) d=d.filter(c=>JSON.stringify(c).toLowerCase().includes(q));
+  document.getElementById('tb-cons').innerHTML=d.length===0
+    ?'<tr><td colspan="7"><div class="empty"><div class="ei">📦</div><p>No hay artículos</p></div></td></tr>'
+    :d.map(c=>{
+      const est=c.stock===0?'<span class="tag tr">🔴 Agotado</span>':c.stock<=c.minimo?'<span class="tag tm">⚠️ Bajo</span>':'<span class="tag tg">✅ OK</span>';
+      return `<tr>
+        <td><strong>${c.nombre}</strong></td>
+        <td><span class="tag tz">${c.categoria}</span></td>
+        <td style="text-align:center"><strong style="font-size:16px;color:${c.stock===0?'var(--red)':c.stock<=c.minimo?'var(--amb)':'var(--grn)'}">${c.stock}</strong></td>
+        <td style="text-align:center;color:var(--tx3)">${c.minimo}</td>
+        <td style="color:var(--tx3)">${c.unidad}</td>
+        <td>${est}</td>
+        <td style="display:flex;gap:5px">
+          <button class="btn btn-ok btn-sm" onclick="quickEntCons(${c.id})">📥</button>
+          <button class="btn btn-del btn-sm" onclick="quickSalCons(${c.id})">📤</button>
+          <button class="btn btn-g btn-sm" onclick="editCons(${c.id})">✏️</button>
+        </td></tr>`;
+    }).join('');
+}
+function quickEntCons(id){document.getElementById('ce-art').value=id;openM('m-cons-ent');}
+function quickSalCons(id){document.getElementById('cs-art').value=id;openM('m-cons-sal');}
+
+function editCons(id){
+  const c=DB.consumibles.find(x=>x.id===id);if(!c)return;
+  document.getElementById('ec-id').value=c.id;
+  document.getElementById('ec-nombre').textContent=c.nombre;
+  document.getElementById('ec-cat').value=c.categoria||'Papelería';
+  document.getElementById('ec-stock').value=c.stock;
+  document.getElementById('ec-min').value=c.minimo;
+  document.getElementById('ec-uni').value=c.unidad||'unidades';
+  openM('m-cons-edit');
+}
+
+function saveEditCons(){
+  const id=parseInt(document.getElementById('ec-id').value);
+  const c=DB.consumibles.find(x=>x.id===id);if(!c)return;
+  c.categoria=v('ec-cat');
+  c.stock=parseInt(document.getElementById('ec-stock').value)||0;
+  c.minimo=parseInt(document.getElementById('ec-min').value)||0;
+  c.unidad=v('ec-uni');
+  updateRow(SHEETS.cons,'NOMBRE',c.nombre,{CATEGORIA:c.categoria,STOCK:c.stock,MINIMO:c.minimo,UNIDAD:c.unidad});
+  closeM('m-cons-edit');
+  renderCons();renderDash();updateBdg();
+  toast(`${c.nombre} actualizado en Sheets ✓`,'s');
+}
+
+// ── PEDIDOS ──────────────────────────────────────────────────
+function renderPed(){
+  document.getElementById('tb-ped').innerHTML=DB.pedidos.length===0
+    ?'<tr><td colspan="5"><div class="empty"><div class="ei">🛒</div><p>Sin pedidos aún</p></div></td></tr>'
+    :DB.pedidos.map(p=>`<tr><td style="font-family:'DM Mono',monospace;font-size:11px">${p.fecha}</td><td>${p.solicitante}</td><td style="max-width:200px;font-size:11px">${p.articulos.replace(/\n/g,'<br>')}</td><td><span class="tag ${p.urgencia==='urgente'?'tr':'ta'}">${p.urgencia}</span></td><td><span class="tag tg">Enviado</span></td></tr>`).join('');
+}
+
+// ── SOLICITUDES ──────────────────────────────────────────────
+function renderSol(){
+  document.getElementById('tb-sol').innerHTML=DB.solicitudes.length===0
+    ?'<tr><td colspan="8"><div class="empty"><div class="ei">🔔</div><p>¡Sin solicitudes pendientes!</p></div></td></tr>'
+    :DB.solicitudes.map(s=>`<tr>
+      <td style="font-family:'DM Mono',monospace;font-size:11px">${s.fecha}</td>
+      <td><span class="tag ${s.modulo==='consumibles'?'tm':s.modulo==='sanitario'?'ta':'tz'}">${s.modulo}</span></td>
+      <td><strong>${s.articulo}</strong></td>
+      <td>${s.cantidad}</td>
+      <td style="font-size:11px;color:var(--tx3)">${s.motivo}</td>
+      <td><span class="tag ${s.urgencia==='urgente'?'tr':'tm'}">${s.urgencia}</span></td>
+      <td><span class="tag ${s.estado==='pendiente'?'tm':'tg'}">${s.estado}</span></td>
+      <td>${s.estado==='pendiente'?`<button class="btn btn-ok btn-sm" onclick="markSent(${s.id})">✓</button>`:''}</td></tr>`).join('');
+}
+function markSent(id){const s=DB.solicitudes.find(x=>x.id===id);if(s){s.estado='enviada';updateBdg();renderSol();toast('Marcada como enviada','s');}}
+
+// ── MOVIMIENTOS ──────────────────────────────────────────────
+let fMovF='all';
+function fMov(f,el){fMovF=f;document.querySelectorAll('#pg-mov .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderMov();}
+function renderMov(){
+  let d=[...DB.movimientos].reverse();
+  if(fMovF!=='all') d=d.filter(m=>m.modulo===fMovF);
+  const cm={informatica:'ta',sanitario:'tt',consumibles:'tm',pedidos:'tz'};
+  const ct={Salida:'tr',Préstamo:'tm',Entrada:'tg',Devolución:'ta'};
+  document.getElementById('tb-mov').innerHTML=d.length===0
+    ?'<tr><td colspan="8"><div class="empty"><div class="ei">📋</div><p>Sin movimientos</p></div></td></tr>'
+    :d.map(m=>`<tr>
+      <td style="font-family:'DM Mono',monospace;font-size:11px">${m.fecha}</td>
+      <td><span class="tag ${cm[m.modulo]||'tz'}">${m.modulo}</span></td>
+      <td><span class="tag ${ct[m.tipo]||'tz'}">${m.tipo}</span></td>
+      <td><strong>${m.material}</strong></td>
+      <td>${m.destino||'—'}</td><td>${m.responsable||'—'}</td>
+      <td style="text-align:center">${m.cantidad||'—'}</td>
+      <td style="font-size:11px;color:var(--tx3)">${m.notas||'—'}</td></tr>`).join('');
+}
+
+// ── CONFIG ───────────────────────────────────────────────────
+function renderCfg(){
+  document.getElementById('cfg-url').value=cfgUrl;
+  document.getElementById('cfg-email').value=cfgEmail;
+}
+function saveConfig(){
+  cfgUrl=document.getElementById('cfg-url').value.trim();
+  cfgEmail=document.getElementById('cfg-email').value.trim();
+  localStorage.setItem('big_apps_url',cfgUrl);
+  localStorage.setItem('big_email',cfgEmail);
+}
+async function testConexion(){
+  const url=document.getElementById('cfg-url').value.trim();
+  if(!url){toast('Introduce la URL del Apps Script','w');return;}
+  document.getElementById('cfg-status').textContent='Probando conexión…';
+  try{
+    const r=await fetch(`${url}?sheet=equipos_informatica`);
+    const d=await r.json();
+    if(d.ok){document.getElementById('cfg-status').innerHTML=`<span style="color:var(--grn)">✅ Conexión OK · ${d.total} equipos encontrados</span>`;cfgUrl=url;localStorage.setItem('big_apps_url',cfgUrl);}
+    else document.getElementById('cfg-status').innerHTML=`<span style="color:var(--red)">❌ Error: ${d.error}</span>`;
+  }catch(e){document.getElementById('cfg-status').innerHTML=`<span style="color:var(--red)">❌ No se pudo conectar</span>`;}
+}
+function copyScript(){
+  const txt=document.getElementById('script-code').textContent;
+  navigator.clipboard.writeText(txt).then(()=>toast('Script copiado al portapapeles ✓','s'));
+}
+
+// ── GUARDAR ──────────────────────────────────────────────────
+const hoy=()=>new Date().toISOString().split('T')[0];
+
+function saveEquipo(){
+  const tag=v('eq-tag'),tipo=v('eq-tipo'),modelo=v('eq-modelo');
+  if(!tag||!modelo){toast('TAG y Modelo son obligatorios','e');return;}
+  const eq={id:DB._ni.eq++,tag,tipo,modelo,propietario:v('eq-prop'),proyecto:v('eq-proy'),ubicacion:v('eq-ubic'),zona:'TECNOPOLE',responsable:v('eq-resp'),estado:v('eq-est'),obs:v('eq-obs')};
+  DB.equipos.push(eq);
+  pushRow(SHEETS.info,{PROPIETARIO:eq.propietario,FECHA:hoy(),TAG:eq.tag,TIPO:eq.tipo,MODELO:eq.modelo,PROYECTO:eq.proyecto,UBICACION:eq.ubicacion,ZONA:eq.zona,RESPONSABLE:eq.responsable,ESTADO:eq.estado,OBSERVACIONES:eq.obs});
+  closeM('m-equipo');renderInfo();toast('Equipo añadido','s');
+}
+
+function savePrestamo(){
+  const tid=v('pr-tag'),resp=v('pr-resp'),fecha=v('pr-fecha');
+  if(!tid||!resp){toast('TAG y responsable obligatorios','e');return;}
+  const eq=DB.equipos.find(e=>e.id==tid);
+  if(eq){eq.estado='prestado';eq.responsable=resp;eq.retorno=v('pr-ret');if(v('pr-dest'))eq.ubicacion=v('pr-dest');
+    addMov('informatica','Préstamo',eq.tag,v('pr-dest'),resp,1,v('pr-ret')?'Retorno: '+v('pr-ret'):'');}
+  if(eq) updateRow(SHEETS.info,'TAG',eq.tag,{ESTADO:'prestado',RESPONSABLE:eq.responsable,UBICACION:eq.ubicacion,OBSERVACIONES:eq.obs});
+  closeM('m-prestamo');renderInfo();renderDash();toast(`Préstamo registrado: ${eq?eq.tag:''}` ,'s');
+}
+
+function saveDevol(){
+  const tid=v('dv-tag'),fecha=v('dv-fecha');
+  if(!tid){toast('Selecciona un equipo','e');return;}
+  const eq=DB.equipos.find(e=>e.id==tid);
+  if(eq){eq.estado=v('dv-est')||'disponible';if(v('dv-ubic'))eq.ubicacion=v('dv-ubic');
+    addMov('informatica','Devolución',eq.tag,'TECNOPOLE',eq.responsable,1,v('dv-obs'));eq.responsable='---';}
+  if(eq) updateRow(SHEETS.info,'TAG',eq.tag,{ESTADO:eq.estado,RESPONSABLE:'---',UBICACION:eq.ubicacion,OBSERVACIONES:eq.obs});
+  closeM('m-devol');renderInfo();renderDash();toast(`Devolución registrada: ${eq?eq.tag:''}` ,'s');
+}
+
+function sanEstado(s){ return s.fuera===0?'En Tecnopole':s.fuera>=s.total?'Todo Fuera':'Parcial'; }
+
+function saveSanNew(){
+  const nom=v('sn-nom'),cant=parseInt(v('sn-cant'))||1;
+  if(!nom){toast('Nombre obligatorio','e');return;}
+  const nuevo={id:DB._ni.san++,nombre:nom.toUpperCase(),tipo:v('sn-tipo'),total:cant,fuera:0,obs:v('sn-obs')};
+  DB.sanitario.push(nuevo);
+  pushRow(SHEETS.san,{MATERIAL:nuevo.nombre,TIPO:nuevo.tipo,TOTAL:cant,DISPONIBLE:cant,FUERA:0,ESTADO:'En Tecnopole',OBSERVACIONES:nuevo.obs});
+  closeM('m-san-new');renderSan();toast('Material añadido y guardado en Sheets ✓','s');
+}
+
+function saveSanSal(){
+  const id=parseInt(v('ss-mat')),cant=parseInt(v('ss-cant'))||1,dest=v('ss-dest'),fecha=v('ss-fecha');
+  if(!dest||!fecha){toast('Centro destino y fecha obligatorios','e');return;}
+  const m=DB.sanitario.find(s=>s.id===id);
+  if(!m){toast('Material no encontrado','e');return;}
+  if(cant>m.total-m.fuera){toast(`Solo hay ${m.total-m.fuera} disponibles`,'e');return;}
+  m.fuera+=cant;
+  addMov('sanitario','Salida',m.nombre,dest,v('ss-resp'),cant,'');
+  updateRow(SHEETS.san,'MATERIAL',m.nombre,{DISPONIBLE:m.total-m.fuera,FUERA:m.fuera,ESTADO:sanEstado(m)});
+  closeM('m-san-sal');renderSan();renderDash();toast(`Salida: ${cant}x ${m.nombre} → ${dest} · Sheets actualizado ✓`,'s');
+}
+
+function saveSanEnt(){
+  const id=parseInt(v('se-mat')),cant=parseInt(v('se-cant'))||1,fecha=v('se-fecha');
+  if(!fecha){toast('Fecha obligatoria','e');return;}
+  const m=DB.sanitario.find(s=>s.id===id);
+  if(!m){toast('Material no encontrado','e');return;}
+  m.fuera=Math.max(0,m.fuera-cant);
+  addMov('sanitario','Entrada',m.nombre,'TECNOPOLE',v('se-resp'),cant,'');
+  updateRow(SHEETS.san,'MATERIAL',m.nombre,{DISPONIBLE:m.total-m.fuera,FUERA:m.fuera,ESTADO:sanEstado(m)});
+  closeM('m-san-ent');renderSan();renderDash();toast(`Entrada: ${cant}x ${m.nombre} · Sheets actualizado ✓`,'s');
+}
+
+function saveConsNew(){
+  const nom=v('cn-nom'),stock=parseInt(v('cn-stock'))||0,min=parseInt(v('cn-min'))||5;
+  if(!nom){toast('Nombre obligatorio','e');return;}
+  const nuevo={id:DB._ni.cons++,nombre:nom,categoria:v('cn-cat'),stock,minimo:min,unidad:v('cn-uni')||'unidades'};
+  DB.consumibles.push(nuevo);
+  pushRow(SHEETS.cons,{NOMBRE:nom,CATEGORIA:nuevo.categoria,STOCK:stock,MINIMO:min,UNIDAD:nuevo.unidad});
+  closeM('m-cons-new');if(stock<=min)crearSol('consumibles',nom,min-stock+min,'Stock bajo al crear');
+  renderCons();updateBdg();toast('Artículo añadido y guardado en Sheets ✓','s');
+}
+
+function moveStock(dir){
+  const isEnt=dir===1;
+  const id=parseInt(isEnt?v('ce-art'):v('cs-art'));
+  const cant=parseInt(isEnt?v('ce-cant'):v('cs-cant'))||1;
+  const obs=isEnt?v('ce-obs'):v('cs-obs');
+  const c=DB.consumibles.find(x=>x.id===id);
+  if(!c){toast('Artículo no encontrado','e');return;}
+  if(!isEnt&&cant>c.stock){toast(`Solo hay ${c.stock} en stock`,'e');return;}
+  c.stock+=dir*cant;
+  addMov('consumibles',isEnt?'Entrada':'Salida',c.nombre,'—','—',cant,obs);
+  // Actualizar stock en Sheets
+  updateRow(SHEETS.cons,'NOMBRE',c.nombre,{STOCK:c.stock});
+  if(!isEnt&&c.stock<=c.minimo){
+    crearSol('consumibles',c.nombre,c.minimo-c.stock+c.minimo,'Stock bajo tras salida',c.stock===0?'urgente':'normal');
+    toast(`⚠️ Solicitud de compra creada: ${c.nombre}`,'w');
+  }
+  closeM(isEnt?'m-cons-ent':'m-cons-sal');
+  renderCons();renderDash();updateBdg();
+  toast(isEnt?`+${cant} a ${c.nombre} · Sheets ✓`:`-${cant} de ${c.nombre} · Sheets ✓`,'s');
+}
+
+function savePedido(){
+  const sol=v('pd-sol'),arts=v('pd-arts');
+  if(!sol||!arts){toast('Solicitante y artículos obligatorios','e');return;}
+  const fecha=v('pd-fecha')||hoy();
+  const urg=v('pd-urg');
+  const obs=v('pd-obs');
+  const p={id:DB._ni.ped++,fecha,solicitante:sol,articulos:arts,urgencia:urg,obs};
+  DB.pedidos.push(p);
+  // Guardar en Sheets
+  pushRow(SHEETS.ped,{FECHA:fecha,SOLICITANTE:sol,ARTICULOS:arts,URGENCIA:urg,OBSERVACIONES:obs,ESTADO:'Enviado'});
+  crearSol('pedidos','Pedido - '+sol,1,'Pedido manual de oficina',urg);
+  // Enviar email automáticamente
+  const email=cfgEmail||'nrmoldes@bigformacion.com';
+  const asunto='Pedido Material Oficina'+(urg==='urgente'?' URGENTE':'')+' - '+sol+' - '+fecha;
+  const cuerpo='Hola,\n\nSe ha generado un nuevo pedido de material de oficina:\n\nSolicitante: '+sol+'\nFecha: '+fecha+'\nUrgencia: '+urg.toUpperCase()+'\n\nArticulos:\n'+arts+(obs?'\nObservaciones: '+obs:'')+'\n\nGracias,\nArea de Innovacion - BiG Formacion';
+  window.open(`mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`);
+  closeM('m-pedido');renderPed();renderDash();updateBdg();
+  toast('Pedido guardado en Sheets y email abierto para enviar 📧','s');
+}
+
+function enviarCompras(){
+  const pend=DB.solicitudes.filter(s=>s.estado==='pendiente');
+  if(!pend.length){toast('No hay solicitudes pendientes','w');return;}
+  const lines=pend.map(s=>`• [${s.urgencia.toUpperCase()}] ${s.articulo} — Qty: ${s.cantidad} — ${s.motivo} (${s.modulo})`).join('\n');
+  const email=cfgEmail||'compras@bigformacion.com';
+  window.open(`mailto:${email}?subject=Solicitudes%20Compra%20-%20Área%20Innovación%20BiG&body=${encodeURIComponent('Hola,\n\nSolicitudes de compra pendientes del Área de Innovación:\n\n'+lines+'\n\nGracias,\nÁrea de Innovación · BiG Formación')}`);
+  toast('Abriendo cliente de email…','s');
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function addMov(modulo,tipo,material,destino,responsable,cantidad,notas){
+  DB.movimientos.push({id:DB._ni.mov++,fecha:hoy(),modulo,tipo,material,destino,responsable,cantidad,notas});
+}
+function crearSol(modulo,articulo,cantidad,motivo,urgencia='normal'){
+  const ya=DB.solicitudes.find(s=>s.articulo===articulo&&s.estado==='pendiente');
+  if(!ya) DB.solicitudes.push({id:DB._ni.sol++,fecha:hoy(),modulo,articulo,cantidad,motivo,urgencia,estado:'pendiente'});
+  updateBdg();
+}
+function getEquiposVencidos(){
+  const hoyMs = new Date().setHours(0,0,0,0);
+  return DB.equipos.filter(e=>{
+    if(e.estado!=='prestado'||!e.retorno) return false;
+    const retMs = new Date(e.retorno).setHours(0,0,0,0);
+    const diff = Math.floor((hoyMs - retMs) / 86400000);
+    if(diff >= 7){ e.diasRetraso = diff; return true; }
+    return false;
+  });
+}
+
+function updateBdgInfo(){
+  const n = getEquiposVencidos().length;
+  const bdg = document.getElementById('bdg-info');
+  if(bdg){ bdg.textContent=n; bdg.style.display=n>0?'inline-flex':'none'; }
+}
+
+function checkMinimos(){
+  DB.consumibles.forEach(c=>{if(c.stock<=c.minimo)crearSol('consumibles',c.nombre,c.minimo-c.stock+c.minimo,'Stock bajo mínimo',c.stock===0?'urgente':'normal');});
+}
+function updateBdg(){
+  const n=DB.solicitudes.filter(s=>s.estado==='pendiente').length;
+  document.getElementById('bdg').textContent=n;
+}
+
+// ── BÚSQUEDA ─────────────────────────────────────────────────
+function buscar(q){
+  const term=q.toLowerCase();
+  if(currentPage==='info') renderInfo(term);
+  else if(currentPage==='san') renderSan(term);
+  else if(currentPage==='cons') renderCons(term);
+}
+function abrirAdd(){
+  const map={info:'m-equipo',san:'m-san-new',cons:'m-cons-new',ped:'m-pedido'};
+  if(map[currentPage]) openM(map[currentPage]);
+  else toast('Navega a un módulo para añadir','w');
+}
+
+// ── MODALES ───────────────────────────────────────────────────
+function openM(id){
+  const m=document.getElementById(id);if(!m)return;
+  m.classList.add('on');
+  if(id==='m-prestamo'){
+    const d=DB.equipos.filter(e=>e.estado==='disponible');
+    document.getElementById('pr-tag').innerHTML=d.map(e=>`<option value="${e.id}">${e.tag} — ${e.modelo}</option>`).join('');
+    document.getElementById('pr-fecha').value=hoy();
+  }
+  if(id==='m-devol'){
+    const d=DB.equipos.filter(e=>e.estado==='prestado');
+    document.getElementById('dv-tag').innerHTML=d.map(e=>`<option value="${e.id}">${e.tag} — ${e.responsable}</option>`).join('');
+    document.getElementById('dv-fecha').value=hoy();
+  }
+  if(id==='m-san-sal'){
+    document.getElementById('ss-mat').innerHTML=DB.sanitario.filter(s=>s.fuera<s.total).map(s=>`<option value="${s.id}">${s.nombre} (disp: ${s.total-s.fuera})</option>`).join('');
+    document.getElementById('ss-fecha').value=hoy();
+  }
+  if(id==='m-san-ent'){
+    document.getElementById('se-mat').innerHTML=DB.sanitario.filter(s=>s.fuera>0).map(s=>`<option value="${s.id}">${s.nombre} (fuera: ${s.fuera})</option>`).join('');
+    document.getElementById('se-fecha').value=hoy();
+  }
+  if(id==='m-cons-ent'){document.getElementById('ce-art').innerHTML=DB.consumibles.map(c=>`<option value="${c.id}">${c.nombre} (${c.stock})</option>`).join('');document.getElementById('ce-fecha').value=hoy();}
+  if(id==='m-cons-sal'){document.getElementById('cs-art').innerHTML=DB.consumibles.filter(c=>c.stock>0).map(c=>`<option value="${c.id}">${c.nombre} (${c.stock})</option>`).join('');document.getElementById('cs-fecha').value=hoy();}
+  if(id==='m-pedido') document.getElementById('pd-fecha').value=hoy();
+}
+function closeM(id){document.getElementById(id)?.classList.remove('on');}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+function v(id){return document.getElementById(id)?.value?.trim()||'';}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg,type='s'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  const ic={s:'✅',w:'⚠️',e:'❌'};
+  el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('tc').appendChild(el);
+  setTimeout(()=>el.style.opacity='0',3000);
+  setTimeout(()=>el.remove(),3300);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+cfgUrl = localStorage.getItem('big_apps_url')||'';
+cfgEmail = localStorage.getItem('big_email')||'compras@bigformacion.com';
+loadDemo();
+renderDash();
+
+// AUTO-SYNC al abrir si hay URL configurada
+async function autoSync(){
+  if(!cfgUrl) return;
+  // Mostrar indicador en botón sync
+  const btn = document.getElementById('btn-sync');
+  btn.textContent = '↻ Cargando…'; btn.disabled = true;
+  try {
+    const [eRes, sRes] = await Promise.all([
+      fetch(`${cfgUrl}?sheet=${SHEETS.info}`),
+      fetch(`${cfgUrl}?sheet=${SHEETS.san}`)
+    ]);
+    const eData = await eRes.json();
+    const sData = await sRes.json();
+    if(eData.ok) parseEquipos(eData.data);
+    if(sData.ok) parseSanitario(sData.data);
+    checkMinimos();
+    updateBdg();
+    renderDash();
+    toast(`Datos sincronizados · ${eData.total||0} equipos · ${DB.sanitario.length} materiales`,'s');
+  } catch(e){
+    toast('Sin conexión — mostrando datos locales','w');
+  }
+  btn.textContent = '↻ Sync'; btn.disabled = false;
+}
+
+// Lanzar auto-sync 800ms después de cargar (da tiempo a que cargue la UI)
+setTimeout(autoSync, 800);
+</script>
+</body>
+</html>
