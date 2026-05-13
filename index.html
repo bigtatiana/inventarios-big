@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BiG Inventarios · Área de Innovación</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+:root{
+  --azul:#017BC4;
+  --azul-oscuro:#002B4A;
+  --azul-claro:#96BAD0;
+  --blanco:#fff;
+  --gris-bg:#f0f4f8;
+  --gris-borde:#dde3ea;
+  --texto:#1a2535;
+  --texto-suave:#5a6a7e;
+  --verde:#22c55e;
+  --rojo:#ef4444;
+  --naranja:#f59e0b;
+  --sidebar-w:230px;
+  --header-h:60px;
+  --radio:10px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--gris-bg);color:var(--texto);display:flex;min-height:100vh;font-size:14px;}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar-w);min-height:100vh;background:var(--azul-oscuro);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;
+  transition:transform .3s;
+}
+#sidebar-logo{
+  padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.1);
+  font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;
+  color:var(--blanco);letter-spacing:.5px;display:flex;align-items:center;gap:10px;
+}
+#sidebar-logo span{font-size:26px;}
+.nav-group{padding:12px 0;}
+.nav-label{font-size:10px;font-weight:700;color:var(--azul-claro);letter-spacing:1.5px;padding:6px 20px 4px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;
+  color:rgba(255,255,255,.7);font-size:13px;font-weight:600;transition:all .2s;
+  border-left:3px solid transparent;
+}
+.nav-item:hover{color:var(--blanco);background:rgba(255,255,255,.07);}
+.nav-item.active{color:var(--blanco);background:rgba(1,123,196,.3);border-left-color:var(--azul);}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--rojo);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;}
+
+/* ── MAIN ── */
+#main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── HEADER ── */
+#header{
+  height:var(--header-h);background:var(--blanco);border-bottom:1px solid var(--gris-borde);
+  display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:50;
+}
+#header h1{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--azul-oscuro);flex:1;}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:7px;
+  border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  transition:all .18s;
+}
+.btn-primary{background:var(--azul);color:#fff;}
+.btn-primary:hover{background:#0165a5;}
+.btn-secondary{background:var(--gris-bg);color:var(--texto);border:1px solid var(--gris-borde);}
+.btn-secondary:hover{background:#e2e8f0;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-danger{background:#fee2e2;color:var(--rojo);}
+.btn-success{background:#dcfce7;color:#16a34a;}
+
+/* ── CONTENT ── */
+#content{padding:24px;flex:1;}
+
+/* ── CARDS ── */
+.card{background:var(--blanco);border-radius:var(--radio);border:1px solid var(--gris-borde);overflow:hidden;}
+.card-header{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid var(--gris-borde);background:var(--blanco);
+}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--azul-oscuro);}
+.card-header .actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ── STATS ROW ── */
+.stats-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-card{
+  flex:1;min-width:130px;background:var(--blanco);border:1px solid var(--gris-borde);
+  border-radius:var(--radio);padding:16px 20px;
+}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:var(--azul);}
+.stat-label{font-size:12px;color:var(--texto-suave);font-weight:600;margin-top:2px;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{
+  background:var(--azul-oscuro);color:#fff;font-size:11px;font-weight:700;
+  letter-spacing:.8px;padding:10px 12px;text-align:left;white-space:nowrap;
+}
+td{padding:9px 12px;border-bottom:1px solid var(--gris-borde);font-size:13px;vertical-align:middle;white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+
+/* ── BADGE ESTADO ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge-disponible{background:#dcfce7;color:#15803d;}
+.badge-prestado,.badge-asignado{background:#dbeafe;color:#1d4ed8;}
+.badge-averia{background:#fee2e2;color:#dc2626;}
+.badge-baja{background:#f3f4f6;color:#6b7280;}
+.badge-urgente{background:#fee2e2;color:#dc2626;}
+.badge-normal{background:#fef9c3;color:#854d0e;}
+
+/* ── TABS (subsecciones informática) ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--gris-borde);background:var(--blanco);padding:0 20px;}
+.tab{
+  padding:12px 20px;cursor:pointer;font-size:13px;font-weight:700;color:var(--texto-suave);
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;align-items:center;gap:8px;
+}
+.tab:hover{color:var(--azul);}
+.tab.active{color:var(--azul);border-bottom-color:var(--azul);}
+.tab-count{
+  background:var(--azul);color:#fff;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;
+}
+.tab.active .tab-count{background:var(--azul-oscuro);}
+
+/* ── SECTION ── */
+.section{display:none;}
+.section.active{display:block;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:10px;padding:12px 20px;flex-wrap:wrap;border-bottom:1px solid var(--gris-borde);background:#f8fafc;}
+.filter-bar input,.filter-bar select{
+  padding:7px 12px;border:1px solid var(--gris-borde);border-radius:7px;
+  font-family:'Nunito',sans-serif;font-size:13px;background:#fff;color:var(--texto);
+}
+.filter-bar input{flex:1;min-width:180px;}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;
+  align-items:center;justify-content:center;
+}
+.modal-overlay.on{display:flex;}
+.modal{
+  background:#fff;border-radius:14px;width:90%;max-width:560px;max-height:90vh;
+  overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;border-bottom:1px solid var(--gris-borde);
+}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--azul-oscuro);}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--texto-suave);}
+.modal-body{padding:24px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid.full{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+label{font-size:12px;font-weight:700;color:var(--texto-suave);letter-spacing:.5px;}
+input,select,textarea{
+  padding:9px 12px;border:1.5px solid var(--gris-borde);border-radius:7px;
+  font-family:'Nunito',sans-serif;font-size:13px;color:var(--texto);
+  transition:border-color .2s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--azul);}
+textarea{resize:vertical;min-height:70px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--gris-borde);display:flex;justify-content:flex-end;gap:10px;}
+
+/* ── ALERT BOX ── */
+.alert{border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.alert-info{background:#dbeafe;color:#1d4ed8;}
+.alert-warning{background:#fef9c3;color:#92400e;}
+
+/* ── DISPONIBLES CHIP ── */
+.disponibles-chip{
+  display:inline-flex;align-items:center;gap:8px;background:var(--azul);color:#fff;
+  padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;
+}
+.disponibles-chip .num{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+.dash-card{
+  background:var(--blanco);border:1px solid var(--gris-borde);border-radius:var(--radio);
+  padding:20px;display:flex;align-items:flex-start;gap:14px;
+}
+.dash-icon{font-size:28px;background:var(--gris-bg);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:center;}
+.dash-info .val{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:700;color:var(--azul);}
+.dash-info .lbl{font-size:12px;color:var(--texto-suave);font-weight:600;}
+.last-mov{background:var(--blanco);border:1px solid var(--gris-borde);border-radius:var(--radio);overflow:hidden;}
+.mov-item{display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--gris-borde);font-size:13px;}
+.mov-item:last-child{border-bottom:none;}
+.mov-tipo{font-size:18px;}
+.mov-info{flex:1;}
+.mov-fecha{font-size:11px;color:var(--texto-suave);}
+
+/* ── TOAST ── */
+#tc{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:999;}
+.toast{
+  display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:9px;
+  background:var(--azul-oscuro);color:#fff;font-size:13px;font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .25s ease;
+}
+.toast.s{background:#166534;} .toast.w{background:#92400e;} .toast.e{background:#991b1b;}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── SYNC STATUS ── */
+#sync-status{font-size:12px;color:var(--texto-suave);display:flex;align-items:center;gap:6px;}
+.dot-sync{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;}
+.dot-sync.off{background:#f59e0b;}
+
+/* ── CONFIG ── */
+.cfg-block{background:var(--gris-bg);border-radius:10px;padding:20px;margin-bottom:16px;}
+.cfg-block h3{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--azul-oscuro);margin-bottom:12px;}
+.cfg-code{background:var(--azul-oscuro);color:#a5f3fc;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:11px;overflow-x:auto;white-space:pre;}
+
+/* ── MDM / TECLADO chips ── */
+.chip-si{background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+.chip-no{background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div id="sidebar-logo"><span>📦</span>BiG Inventarios</div>
+  <div class="nav-group">
+    <div class="nav-label">MÓDULOS</div>
+    <div class="nav-item active" onclick="goTo('dash')"><span class="icon">📊</span>Dashboard</div>
+    <div class="nav-item" onclick="goTo('info')"><span class="icon">💻</span>Informática</div>
+    <div class="nav-item" onclick="goTo('san')"><span class="icon">🏥</span>Sanitario</div>
+    <div class="nav-item" onclick="goTo('cons')"><span class="icon">📦</span>Consumibles</div>
+    <div class="nav-item" onclick="goTo('ped')"><span class="icon">🛒</span>Pedidos Oficina</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">SISTEMA</div>
+    <div class="nav-item" id="nav-solic" onclick="goTo('solic')"><span class="icon">🔔</span>Solicitudes<span class="nav-badge" id="badge-nav">0</span></div>
+    <div class="nav-item" onclick="goTo('cfg')"><span class="icon">⚙️</span>Conexión Sheets</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- HEADER -->
+  <div id="header">
+    <h1 id="page-title">Dashboard</h1>
+    <div id="sync-status"><span class="dot-sync off"></span>Sin conexión</div>
+    <button class="btn btn-secondary btn-sm" onclick="syncAll()">↻ Sync</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="sec-dash" class="section active">
+      <div class="dash-grid" id="dash-grid"></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">⏱ Últimos movimientos</span></div>
+        <div class="last-mov" id="last-mov"></div>
+      </div>
+    </div>
+
+    <!-- ═══ INFORMÁTICA ═══ -->
+    <div id="sec-info" class="section">
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" id="tab-equipos" onclick="switchTab('equipos')">
+            💻 Equipos Informáticos <span class="tab-count" id="cnt-equipos">0</span>
+          </div>
+          <div class="tab" id="tab-tablets" onclick="switchTab('tablets')">
+            📱 Stock Tablets <span class="tab-count" id="cnt-tablets">0</span>
+          </div>
+        </div>
+
+        <!-- SUB: EQUIPOS INFORMÁTICOS -->
+        <div id="sub-equipos">
+          <div class="card-header">
+            <span class="card-title">💻 Equipos Informáticos</span>
+            <div class="actions">
+              <button class="btn btn-primary btn-sm" onclick="openM('modal-info-add')">+ Añadir equipo</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input type="text" id="fi-buscar" placeholder="🔍 Buscar TAG, modelo, responsable..." oninput="renderInfo()">
+            <select id="fi-estado" onchange="renderInfo()">
+              <option value="">Todos los estados</option>
+              <option>disponible</option><option>prestado</option><option>averia</option><option>baja</option>
+            </select>
+            <select id="fi-tipo" onchange="renderInfo()">
+              <option value="">Todos los tipos</option>
+              <option>Portátil</option><option>Tablet</option><option>Móvil</option><option>Sobremesa</option><option>Monitor</option>
+            </select>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>FECHA</th><th>TAG</th><th>TIPO</th><th>MODELO</th>
+                <th>PROYECTO</th><th>UBICACIÓN</th><th>RESPONSABLE</th>
+                <th>ESTADO</th><th>SN</th><th>OBS</th><th>ACCIÓN</th>
+              </tr></thead>
+              <tbody id="tbody-info"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUB: STOCK TABLETS -->
+        <div id="sub-tablets" style="display:none;">
+          <div class="card-header">
+            <span class="card-title">📱 Stock Tablets</span>
+            <div class="actions">
+              <div class="disponibles-chip" id="chip-disponibles">
+                <span>Disponibles:</span><span class="num" id="num-disponibles">0</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openM('modal-tab-add')">+ Añadir tablet</button>
+              <button class="btn btn-secondary btn-sm" onclick="openM('modal-tab-entrada')">📥 Entrada</button>
+              <button class="btn btn-secondary btn-sm" onclick="openM('modal-tab-salida')">📤 Salida</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input type="text" id="ft-buscar" placeholder="🔍 Buscar TAG, modelo, SN..." oninput="renderTablets()">
+            <select id="ft-estado" onchange="renderTablets()">
+              <option value="">Todos los estados</option>
+              <option>Disponible</option><option>Asignado</option><option>Baja</option>
+            </select>
+            <select id="ft-mdm" onchange="renderTablets()">
+              <option value="">MDM: todos</option>
+              <option value="si">MDM activo</option><option value="no">Sin MDM</option>
+            </select>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>FECHA</th><th>TAG</th><th>TIPO</th><th>MODELO</th>
+                <th>UBICACIÓN</th><th>ESTADO</th><th>SN</th>
+                <th>TECLADO</th><th>MDM</th><th>OBS</th><th>ACCIÓN</th>
+              </tr></thead>
+              <tbody id="tbody-tabs"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SANITARIO ═══ -->
+    <div id="sec-san" class="section">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🏥 Material Sanitario</span>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" onclick="openM('modal-san-add')">+ Añadir material</button>
+            <button class="btn btn-secondary btn-sm" onclick="openM('modal-san-entrada')">📥 Entrada</button>
+            <button class="btn btn-secondary btn-sm" onclick="openM('modal-san-salida')">📤 Salida</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="fs-buscar" placeholder="🔍 Buscar nombre, ubicación..." oninput="renderSan()">
+          <select id="fs-estado" onchange="renderSan()">
+            <option value="">Todos</option><option>disponible</option><option>prestado</option><option>baja</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>NOMBRE</th><th>TIPO</th><th>UBICACIÓN</th><th>ESTADO</th><th>FUERA</th><th>OBS</th><th>ACCIÓN</th></tr></thead>
+            <tbody id="tbody-san"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CONSUMIBLES ═══ -->
+    <div id="sec-cons" class="section">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📦 Consumibles de Cursos</span>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" onclick="openM('modal-cons-add')">+ Añadir artículo</button>
+            <button class="btn btn-secondary btn-sm" onclick="openM('modal-cons-entrada')">📥 Entrada</button>
+            <button class="btn btn-secondary btn-sm" onclick="openM('modal-cons-salida')">📤 Salida</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>ARTÍCULO</th><th>STOCK</th><th>MÍNIMO</th><th>ESTADO</th><th>ACCIÓN</th></tr></thead>
+            <tbody id="tbody-cons"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PEDIDOS OFICINA ═══ -->
+    <div id="sec-ped" class="section">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🛒 Pedidos de Oficina</span>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" onclick="openM('modal-pedido')">+ Nuevo pedido</button>
+          </div>
+        </div>
+        <div class="alert alert-info" style="margin:16px 20px 0;">ℹ️ Este módulo solo genera solicitudes de compra. No lleva inventario.</div>
+        <div class="tbl-wrap" style="margin-top:16px;">
+          <table>
+            <thead><tr><th>FECHA</th><th>ARTÍCULO</th><th>CANTIDAD</th><th>PRIORIDAD</th><th>MOTIVO</th><th>ESTADO</th></tr></thead>
+            <tbody id="tbody-ped"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SOLICITUDES ═══ -->
+    <div id="sec-solic" class="section">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🔔 Solicitudes de Compra</span>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" onclick="enviarCompras()">📧 Enviar a Compras</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>FECHA</th><th>TIPO</th><th>ARTÍCULO</th><th>CANT.</th><th>PRIORIDAD</th><th>MOTIVO</th><th>ESTADO</th><th>ACCIÓN</th></tr></thead>
+            <tbody id="tbody-solic"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CONFIG ═══ -->
+    <div id="sec-cfg" class="section">
+      <div class="card" style="max-width:680px;">
+        <div class="card-header"><span class="card-title">⚙️ Conexión Google Sheets</span></div>
+        <div style="padding:24px;">
+          <div class="cfg-block">
+            <h3>1 · URL del Apps Script</h3>
+            <div class="form-group">
+              <input type="url" id="cfg-url" placeholder="https://script.google.com/macros/s/..." style="font-size:12px;">
+            </div>
+          </div>
+          <div class="cfg-block">
+            <h3>2 · Email de Compras</h3>
+            <div class="form-group">
+              <input type="email" id="cfg-email" placeholder="compras@bigformacion.com">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <button class="btn btn-primary" onclick="saveCfg()">💾 Guardar</button>
+            <button class="btn btn-secondary" onclick="testConexion()">🔌 Probar Conexión</button>
+          </div>
+          <div id="cfg-result" style="font-size:13px;font-weight:600;"></div>
+          <div class="cfg-block" style="margin-top:20px;">
+            <h3>Apps Script · Código a pegar</h3>
+            <button class="btn btn-secondary btn-sm" onclick="copiarScript()" style="margin-bottom:10px;">📋 Copiar Apps Script</button>
+            <div class="cfg-code" id="script-preview">// Cargando código...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div id="tc"></div>
+
+<!-- ══════════════════════════════════════════
+     MODALES
+══════════════════════════════════════════ -->
+
+<!-- ADD EQUIPO INFO -->
+<div class="modal-overlay ov" id="modal-info-add">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">➕ Añadir Equipo</span>
+      <button class="modal-close" onclick="closeM('modal-info-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="ia-fecha"></div>
+        <div class="form-group"><label>TAG</label><input type="text" id="ia-tag" placeholder="TAG-001"></div>
+        <div class="form-group"><label>TIPO</label>
+          <select id="ia-tipo"><option>Portátil</option><option>Tablet</option><option>Móvil</option><option>Sobremesa</option><option>Monitor</option></select>
+        </div>
+        <div class="form-group"><label>MODELO</label><input type="text" id="ia-modelo"></div>
+        <div class="form-group"><label>PROYECTO</label><input type="text" id="ia-proyecto"></div>
+        <div class="form-group"><label>UBICACIÓN</label><input type="text" id="ia-ubicacion"></div>
+        <div class="form-group"><label>RESPONSABLE</label><input type="text" id="ia-responsable"></div>
+        <div class="form-group"><label>ESTADO</label>
+          <select id="ia-estado"><option>disponible</option><option>prestado</option><option>averia</option><option>baja</option></select>
+        </div>
+        <div class="form-group"><label>SN</label><input type="text" id="ia-sn"></div>
+        <div class="form-group"><label>CARGADOR</label>
+          <select id="ia-cargador"><option value="si">Sí</option><option value="no">No</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="ia-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-info-add')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addEquipo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT EQUIPO INFO -->
+<div class="modal-overlay ov" id="modal-info-edit">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✏️ Editar Equipo</span>
+      <button class="modal-close" onclick="closeM('modal-info-edit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ie-idx">
+      <div class="form-grid">
+        <div class="form-group"><label>PROYECTO</label><input type="text" id="ie-proyecto"></div>
+        <div class="form-group"><label>UBICACIÓN</label><input type="text" id="ie-ubicacion"></div>
+        <div class="form-group"><label>RESPONSABLE</label><input type="text" id="ie-responsable"></div>
+        <div class="form-group"><label>ESTADO</label>
+          <select id="ie-estado"><option>disponible</option><option>prestado</option><option>averia</option><option>baja</option></select>
+        </div>
+        <div class="form-group"><label>SN</label><input type="text" id="ie-sn"></div>
+        <div class="form-group"><label>CARGADOR</label>
+          <select id="ie-cargador"><option value="si">Sí</option><option value="no">No</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="ie-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-info-edit')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEditEquipo()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TABLET -->
+<div class="modal-overlay ov" id="modal-tab-add">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📱 Añadir Tablet</span>
+      <button class="modal-close" onclick="closeM('modal-tab-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="ta-fecha"></div>
+        <div class="form-group"><label>TAG</label><input type="text" id="ta-tag" placeholder="TAB-001"></div>
+        <div class="form-group"><label>MODELO</label><input type="text" id="ta-modelo" placeholder="iPad Air 5ª gen..."></div>
+        <div class="form-group"><label>UBICACIÓN</label><input type="text" id="ta-ubicacion"></div>
+        <div class="form-group"><label>ESTADO</label>
+          <select id="ta-estado"><option>Disponible</option><option>Asignado</option><option>Baja</option></select>
+        </div>
+        <div class="form-group"><label>SN / NÚMERO DE SERIE</label><input type="text" id="ta-sn"></div>
+        <div class="form-group"><label>¿LLEVA TECLADO?</label>
+          <select id="ta-teclado"><option value="si">Sí</option><option value="no">No</option></select>
+        </div>
+        <div class="form-group"><label>¿MDM ACTIVO?</label>
+          <select id="ta-mdm"><option value="si">Sí</option><option value="no">No</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="ta-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-tab-add')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addTablet()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TABLET -->
+<div class="modal-overlay ov" id="modal-tab-edit">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✏️ Editar Tablet</span>
+      <button class="modal-close" onclick="closeM('modal-tab-edit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="te-idx">
+      <div class="form-grid">
+        <div class="form-group"><label>MODELO</label><input type="text" id="te-modelo"></div>
+        <div class="form-group"><label>UBICACIÓN</label><input type="text" id="te-ubicacion"></div>
+        <div class="form-group"><label>ESTADO</label>
+          <select id="te-estado"><option>Disponible</option><option>Asignado</option><option>Baja</option></select>
+        </div>
+        <div class="form-group"><label>SN</label><input type="text" id="te-sn"></div>
+        <div class="form-group"><label>¿LLEVA TECLADO?</label>
+          <select id="te-teclado"><option value="si">Sí</option><option value="no">No</option></select>
+        </div>
+        <div class="form-group"><label>¿MDM ACTIVO?</label>
+          <select id="te-mdm"><option value="si">Sí</option><option value="no">No</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="te-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-tab-edit')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEditTablet()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENTRADA TABLET -->
+<div class="modal-overlay ov" id="modal-tab-entrada">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📥 Registrar Entrada · Tablet</span>
+      <button class="modal-close" onclick="closeM('modal-tab-entrada')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="tent-fecha"></div>
+        <div class="form-group"><label>TABLET (TAG)</label>
+          <select id="tent-tag"><option value="">-- Seleccionar --</option></select>
+        </div>
+        <div class="form-group form-grid" style="display:block;"><label>NUEVO ESTADO</label>
+          <select id="tent-estado"><option>Disponible</option><option>Asignado</option></select>
+        </div>
+        <div class="form-group"><label>RESPONSABLE</label><input type="text" id="tent-resp"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="tent-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-tab-entrada')">Cancelar</button>
+      <button class="btn btn-primary" onclick="movTablet(true)">Registrar entrada</button>
+    </div>
+  </div>
+</div>
+
+<!-- SALIDA TABLET -->
+<div class="modal-overlay ov" id="modal-tab-salida">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📤 Registrar Salida · Tablet</span>
+      <button class="modal-close" onclick="closeM('modal-tab-salida')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="tsal-fecha"></div>
+        <div class="form-group"><label>TABLET (TAG)</label>
+          <select id="tsal-tag"><option value="">-- Seleccionar --</option></select>
+        </div>
+        <div class="form-group"><label>ASIGNADO A</label><input type="text" id="tsal-resp"></div>
+        <div class="form-group"><label>NUEVA UBICACIÓN</label><input type="text" id="tsal-ubic"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="tsal-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-tab-salida')">Cancelar</button>
+      <button class="btn btn-primary" onclick="movTablet(false)">Registrar salida</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SANITARIO -->
+<div class="modal-overlay ov" id="modal-san-add">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">➕ Añadir Material Sanitario</span>
+      <button class="modal-close" onclick="closeM('modal-san-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>NOMBRE</label><input type="text" id="sa-nombre"></div>
+        <div class="form-group"><label>TIPO</label>
+          <select id="sa-tipo"><option>No fungible</option><option>Fungible</option></select>
+        </div>
+        <div class="form-group"><label>UBICACIÓN</label><input type="text" id="sa-ubicacion"></div>
+        <div class="form-group"><label>ESTADO</label>
+          <select id="sa-estado"><option>disponible</option><option>prestado</option><option>baja</option></select>
+        </div>
+        <div class="form-group"><label>UNIDADES FUERA</label><input type="number" id="sa-fuera" value="0" min="0"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="sa-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-san-add')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addSan()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENTRADA / SALIDA SANITARIO -->
+<div class="modal-overlay ov" id="modal-san-entrada">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📥 Entrada · Material Sanitario</span>
+      <button class="modal-close" onclick="closeM('modal-san-entrada')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="se-fecha"></div>
+        <div class="form-group"><label>MATERIAL</label>
+          <select id="se-nombre"><option value="">-- Seleccionar --</option></select>
+        </div>
+        <div class="form-group"><label>CANTIDAD</label><input type="number" id="se-cant" value="1" min="1"></div>
+        <div class="form-group"><label>RESPONSABLE</label><input type="text" id="se-resp"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="se-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-san-entrada')">Cancelar</button>
+      <button class="btn btn-primary" onclick="movSan(true)">Registrar entrada</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay ov" id="modal-san-salida">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📤 Salida · Material Sanitario</span>
+      <button class="modal-close" onclick="closeM('modal-san-salida')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="ss-fecha"></div>
+        <div class="form-group"><label>MATERIAL</label>
+          <select id="ss-nombre"><option value="">-- Seleccionar --</option></select>
+        </div>
+        <div class="form-group"><label>CANTIDAD</label><input type="number" id="ss-cant" value="1" min="1"></div>
+        <div class="form-group"><label>RESPONSABLE</label><input type="text" id="ss-resp"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>OBSERVACIONES</label><textarea id="ss-obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-san-salida')">Cancelar</button>
+      <button class="btn btn-primary" onclick="movSan(false)">Registrar salida</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONSUMIBLES ADD -->
+<div class="modal-overlay ov" id="modal-cons-add">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">➕ Añadir Consumible</span>
+      <button class="modal-close" onclick="closeM('modal-cons-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>NOMBRE</label><input type="text" id="ca-nombre"></div>
+        <div class="form-group"><label>STOCK INICIAL</label><input type="number" id="ca-stock" value="0" min="0"></div>
+        <div class="form-group"><label>STOCK MÍNIMO</label><input type="number" id="ca-minimo" value="5" min="0"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-cons-add')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addCons()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONSUMIBLES ENTRADA/SALIDA -->
+<div class="modal-overlay ov" id="modal-cons-entrada">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📥 Entrada · Consumibles</span>
+      <button class="modal-close" onclick="closeM('modal-cons-entrada')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="ce-fecha"></div>
+        <div class="form-group"><label>ARTÍCULO</label>
+          <select id="ce-articulo"><option value="">-- Seleccionar --</option></select>
+        </div>
+        <div class="form-group"><label>CANTIDAD</label><input type="number" id="ce-cant" value="1" min="1"></div>
+        <div class="form-group"><label>OBS</label><input type="text" id="ce-obs"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-cons-entrada')">Cancelar</button>
+      <button class="btn btn-primary" onclick="movCons(true)">Registrar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay ov" id="modal-cons-salida">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📤 Salida · Consumibles</span>
+      <button class="modal-close" onclick="closeM('modal-cons-salida')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="cs-fecha"></div>
+        <div class="form-group"><label>ARTÍCULO</label>
+          <select id="cs-articulo"><option value="">-- Seleccionar --</option></select>
+        </div>
+        <div class="form-group"><label>CANTIDAD</label><input type="number" id="cs-cant" value="1" min="1"></div>
+        <div class="form-group"><label>OBS</label><input type="text" id="cs-obs"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-cons-salida')">Cancelar</button>
+      <button class="btn btn-primary" onclick="movCons(false)">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PEDIDO OFICINA -->
+<div class="modal-overlay ov" id="modal-pedido">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🛒 Nuevo Pedido de Oficina</span>
+      <button class="modal-close" onclick="closeM('modal-pedido')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>FECHA</label><input type="date" id="pd-fecha"></div>
+        <div class="form-group"><label>ARTÍCULO</label><input type="text" id="pd-articulo"></div>
+        <div class="form-group"><label>CANTIDAD</label><input type="number" id="pd-cant" value="1" min="1"></div>
+        <div class="form-group"><label>PRIORIDAD</label>
+          <select id="pd-prior"><option value="normal">Normal</option><option value="urgente">Urgente</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>MOTIVO / DESCRIPCIÓN</label><textarea id="pd-motivo"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeM('modal-pedido')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addPedido()">Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+// ── ESTADO GLOBAL ─────────────────────────────────────────────
+let cfgUrl = localStorage.getItem('big_apps_url')||'';
+let cfgEmail = localStorage.getItem('big_email')||'compras@bigformacion.com';
+
+const db = {
+  equipos: [],
+  tablets: [],
+  sanitario: [],
+  consumibles: [],
+  solicitudes: [],
+  movimientos: []
+};
+
+// ── UTILS ─────────────────────────────────────────────────────
+function hoy(){ return new Date().toISOString().split('T')[0]; }
+function v(id){ return document.getElementById(id)?.value?.trim()||''; }
+function setV(id,val){ const el=document.getElementById(id); if(el) el.value=val||''; }
+
+function toast(msg,type='s'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  const ic={s:'✅',w:'⚠️',e:'❌'};
+  el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('tc').appendChild(el);
+  setTimeout(()=>el.style.opacity='0',3000);
+  setTimeout(()=>el.remove(),3500);
+}
+
+function addMov(tipo,nombre,entrada,salida,cant,obs){
+  db.movimientos.unshift({
+    fecha:hoy(), tipo, nombre,
+    accion: entrada>0?'Entrada':'Salida',
+    cant: entrada||salida, obs
+  });
+  if(db.movimientos.length>50) db.movimientos.pop();
+}
+
+function badgeEstado(e){
+  const m={disponible:'badge-disponible',prestado:'badge-prestado',asignado:'badge-asignado',averia:'badge-averia',baja:'badge-baja','Disponible':'badge-disponible','Asignado':'badge-asignado','Baja':'badge-baja'};
+  return `<span class="badge ${m[e]||''}">${e}</span>`;
+}
+function chipBool(val){ return val==='si'?'<span class="chip-si">Sí</span>':'<span class="chip-no">No</span>'; }
+
+// ── NAVEGACIÓN ────────────────────────────────────────────────
+const secciones=['dash','info','san','cons','ped','solic','cfg'];
+function goTo(id){
+  secciones.forEach(s=>{
+    document.getElementById('sec-'+s)?.classList.remove('active');
+    document.querySelector(`.nav-item[onclick="goTo('${s}')"]`)?.classList.remove('active');
+  });
+  document.getElementById('sec-'+id)?.classList.add('active');
+  document.querySelector(`.nav-item[onclick="goTo('${id}')"]`)?.classList.add('active');
+  const titles={dash:'Dashboard',info:'Equipos Informáticos',san:'Material Sanitario',cons:'Consumibles de Cursos',ped:'Pedidos de Oficina',solic:'Solicitudes de Compra',cfg:'Conexión Sheets'};
+  document.getElementById('page-title').textContent=titles[id]||'';
+  if(id==='dash') renderDash();
+  if(id==='info'){ renderInfo(); renderTablets(); }
+  if(id==='san') renderSan();
+  if(id==='cons') renderCons();
+  if(id==='solic') renderSolic();
+  if(id==='ped') renderPed();
+  if(id==='cfg') initCfg();
+}
+
+// ── TABS INFORMÁTICA ──────────────────────────────────────────
+function switchTab(tab){
+  document.getElementById('sub-equipos').style.display = tab==='equipos'?'':'none';
+  document.getElementById('sub-tablets').style.display  = tab==='tablets'?'':'none';
+  document.getElementById('tab-equipos').classList.toggle('active', tab==='equipos');
+  document.getElementById('tab-tablets').classList.toggle('active', tab==='tablets');
+  if(tab==='tablets') renderTablets();
+  if(tab==='equipos') renderInfo();
+}
+
+// ── MODALES ───────────────────────────────────────────────────
+function openM(id){
+  document.getElementById(id)?.classList.add('on');
+  // prefill fechas
+  ['ia-fecha','ta-fecha','tent-fecha','tsal-fecha','se-fecha','ss-fecha','ce-fecha','cs-fecha','pd-fecha'].forEach(f=>{
+    const el=document.getElementById(f); if(el&&!el.value) el.value=hoy();
+  });
+  // poblar selects
+  if(id==='modal-san-entrada'||id==='modal-san-salida'){
+    const pfx = id==='modal-san-entrada'?'se':'ss';
+    document.getElementById(pfx+'-nombre').innerHTML=
+      db.sanitario.map(s=>`<option value="${s.id}">${s.nombre}</option>`).join('');
+  }
+  if(id==='modal-cons-entrada'){
+    document.getElementById('ce-articulo').innerHTML=
+      db.consumibles.map(c=>`<option value="${c.id}">${c.nombre} (Stock: ${c.stock})</option>`).join('');
+  }
+  if(id==='modal-cons-salida'){
+    document.getElementById('cs-articulo').innerHTML=
+      db.consumibles.filter(c=>c.stock>0).map(c=>`<option value="${c.id}">${c.nombre} (Stock: ${c.stock})</option>`).join('');
+  }
+  if(id==='modal-tab-entrada'){
+    document.getElementById('tent-tag').innerHTML=
+      '<option value="">-- Seleccionar --</option>'+
+      db.tablets.filter(t=>t.estado!=='Disponible').map(t=>`<option value="${t.id}">${t.tag} · ${t.modelo}</option>`).join('');
+  }
+  if(id==='modal-tab-salida'){
+    document.getElementById('tsal-tag').innerHTML=
+      '<option value="">-- Seleccionar --</option>'+
+      db.tablets.filter(t=>t.estado==='Disponible').map(t=>`<option value="${t.id}">${t.tag} · ${t.modelo}</option>`).join('');
+  }
+}
+function closeM(id){ document.getElementById(id)?.classList.remove('on'); }
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+// ── EQUIPOS INFORMÁTICA ───────────────────────────────────────
+function addEquipo(){
+  if(!v('ia-tag')||!v('ia-modelo')){toast('TAG y Modelo son obligatorios','e');return;}
+  db.equipos.push({
+    id:Date.now(),
+    fecha:v('ia-fecha')||hoy(), tag:v('ia-tag'), tipo:v('ia-tipo'),
+    modelo:v('ia-modelo'), proyecto:v('ia-proyecto'), ubicacion:v('ia-ubicacion'),
+    responsable:v('ia-responsable'), estado:v('ia-estado'), sn:v('ia-sn'),
+    cargador:v('ia-cargador'), obs:v('ia-obs')
+  });
+  pushSheet('equipos_informatica', db.equipos[db.equipos.length-1]);
+  closeM('modal-info-add');
+  renderInfo(); toast('Equipo añadido');
+}
+
+function openEditEquipo(idx){
+  const e=db.equipos[idx];
+  setV('ie-idx',idx); setV('ie-proyecto',e.proyecto); setV('ie-ubicacion',e.ubicacion);
+  setV('ie-responsable',e.responsable); setV('ie-estado',e.estado);
+  setV('ie-sn',e.sn); setV('ie-cargador',e.cargador); setV('ie-obs',e.obs);
+  openM('modal-info-edit');
+}
+function saveEditEquipo(){
+  const idx=parseInt(v('ie-idx'));
+  const e=db.equipos[idx];
+  e.proyecto=v('ie-proyecto'); e.ubicacion=v('ie-ubicacion');
+  e.responsable=v('ie-responsable'); e.estado=v('ie-estado');
+  e.sn=v('ie-sn'); e.cargador=v('ie-cargador'); e.obs=v('ie-obs');
+  updateSheet('equipos_informatica','TAG',e.tag,e);
+  closeM('modal-info-edit'); renderInfo(); toast('Equipo actualizado');
+}
+
+function renderInfo(){
+  const buscar=v('fi-buscar').toLowerCase();
+  const est=v('fi-estado');
+  const tipo=v('fi-tipo');
+  const filtered=db.equipos.filter(e=>{
+    const txt=(e.tag+e.modelo+e.responsable+e.proyecto).toLowerCase();
+    return(!buscar||txt.includes(buscar))&&(!est||e.estado===est)&&(!tipo||e.tipo===tipo);
+  });
+  document.getElementById('cnt-equipos').textContent=db.equipos.length;
+  document.getElementById('tbody-info').innerHTML=filtered.map((e,i)=>`
+    <tr>
+      <td>${e.fecha}</td><td><strong>${e.tag}</strong></td><td>${e.tipo}</td>
+      <td>${e.modelo}</td><td>${e.proyecto||'—'}</td><td>${e.ubicacion||'—'}</td>
+      <td>${e.responsable||'—'}</td><td>${badgeEstado(e.estado)}</td>
+      <td style="font-size:11px;color:var(--texto-suave)">${e.sn||'—'}</td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">${e.obs||'—'}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openEditEquipo(${db.equipos.indexOf(e)})">✏️</button></td>
+    </tr>`).join('');
+}
+
+// ── STOCK TABLETS ─────────────────────────────────────────────
+function addTablet(){
+  if(!v('ta-tag')||!v('ta-modelo')){toast('TAG y Modelo son obligatorios','e');return;}
+  db.tablets.push({
+    id:Date.now(),
+    fecha:v('ta-fecha')||hoy(), tag:v('ta-tag'), tipo:'Tablet',
+    modelo:v('ta-modelo'), ubicacion:v('ta-ubicacion'), estado:v('ta-estado'),
+    sn:v('ta-sn'), teclado:v('ta-teclado'), mdm:v('ta-mdm'), obs:v('ta-obs')
+  });
+  pushSheet('stock_tablets', db.tablets[db.tablets.length-1]);
+  closeM('modal-tab-add');
+  renderTablets(); updateDisponibles(); toast('Tablet añadida');
+}
+
+function openEditTablet(idx){
+  const t=db.tablets[idx];
+  setV('te-idx',idx); setV('te-modelo',t.modelo); setV('te-ubicacion',t.ubicacion);
+  setV('te-estado',t.estado); setV('te-sn',t.sn);
+  setV('te-teclado',t.teclado); setV('te-mdm',t.mdm); setV('te-obs',t.obs);
+  openM('modal-tab-edit');
+}
+function saveEditTablet(){
+  const idx=parseInt(v('te-idx'));
+  const t=db.tablets[idx];
+  t.modelo=v('te-modelo'); t.ubicacion=v('te-ubicacion');
+  t.estado=v('te-estado'); t.sn=v('te-sn');
+  t.teclado=v('te-teclado'); t.mdm=v('te-mdm'); t.obs=v('te-obs');
+  updateSheet('stock_tablets','TAG',t.tag,t);
+  closeM('modal-tab-edit'); renderTablets(); updateDisponibles(); toast('Tablet actualizada');
+}
+
+function movTablet(esEntrada){
+  const mid=esEntrada?'tent':'tsal';
+  const tagId=v(mid+'-tag');
+  if(!tagId){toast('Selecciona una tablet','e');return;}
+  const t=db.tablets.find(x=>x.id==tagId);
+  if(!t){toast('Tablet no encontrada','e');return;}
+  if(esEntrada){
+    t.estado=v('tent-estado');
+    addMov('📱 Tablet',t.tag,'Entrada','',1,v('tent-obs'));
+    closeM('modal-tab-entrada');
+  } else {
+    t.estado='Asignado';
+    if(v('tsal-ubic')) t.ubicacion=v('tsal-ubic');
+    addMov('📱 Tablet',t.tag,'','Salida',1,v('tsal-obs'));
+    closeM('modal-tab-salida');
+  }
+  updateSheet('stock_tablets','TAG',t.tag,t);
+  renderTablets(); updateDisponibles();
+  toast(esEntrada?'Entrada registrada':'Salida registrada');
+}
+
+function updateDisponibles(){
+  const n=db.tablets.filter(t=>t.estado==='Disponible').length;
+  document.getElementById('num-disponibles').textContent=n;
+  document.getElementById('cnt-tablets').textContent=db.tablets.length;
+}
+
+function renderTablets(){
+  const buscar=v('ft-buscar').toLowerCase();
+  const est=v('ft-estado');
+  const mdm=v('ft-mdm');
+  const filtered=db.tablets.filter(t=>{
+    const txt=(t.tag+t.modelo+(t.sn||'')).toLowerCase();
+    return(!buscar||txt.includes(buscar))&&(!est||t.estado===est)&&(!mdm||(mdm==='si'?t.mdm==='si':t.mdm!=='si'));
+  });
+  updateDisponibles();
+  document.getElementById('tbody-tabs').innerHTML=filtered.length===0?
+    `<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--texto-suave)">No hay tablets. Añade la primera con "+ Añadir tablet"</td></tr>`:
+    filtered.map((t,i)=>`
+    <tr>
+      <td>${t.fecha}</td>
+      <td><strong>${t.tag}</strong></td>
+      <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">Tablet</span></td>
+      <td>${t.modelo}</td>
+      <td>${t.ubicacion||'—'}</td>
+      <td>${badgeEstado(t.estado)}</td>
+      <td style="font-size:11px;color:var(--texto-suave)">${t.sn||'—'}</td>
+      <td>${chipBool(t.teclado)}</td>
+      <td>${chipBool(t.mdm)}</td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;">${t.obs||'—'}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openEditTablet(${db.tablets.indexOf(t)})">✏️</button></td>
+    </tr>`).join('');
+}
+
+// ── SANITARIO ─────────────────────────────────────────────────
+function addSan(){
+  if(!v('sa-nombre')){toast('Nombre obligatorio','e');return;}
+  db.sanitario.push({
+    id:Date.now(), nombre:v('sa-nombre'), tipo:v('sa-tipo'),
+    ubicacion:v('sa-ubicacion'), estado:v('sa-estado'),
+    fuera:parseInt(v('sa-fuera'))||0, obs:v('sa-obs')
+  });
+  pushSheet('sanitario', db.sanitario[db.sanitario.length-1]);
+  closeM('modal-san-add'); renderSan(); toast('Material añadido');
+}
+
+function movSan(esEntrada){
+  const pfx=esEntrada?'se':'ss';
+  const sid=v(pfx+'-nombre');
+  const cant=parseInt(v(pfx+'-cant'))||1;
+  const s=db.sanitario.find(x=>x.id==sid);
+  if(!s){toast('Selecciona material','e');return;}
+  if(esEntrada){ s.fuera=Math.max(0,s.fuera-cant); s.estado=s.fuera>0?'prestado':'disponible'; }
+  else { s.fuera+=cant; s.estado='prestado'; }
+  addMov('🏥 Sanitario',s.nombre,esEntrada?cant:0,esEntrada?0:cant,'',v(pfx+'-obs'));
+  updateSheet('sanitario','NOMBRE',s.nombre,s);
+  closeM(esEntrada?'modal-san-entrada':'modal-san-salida');
+  renderSan(); toast(esEntrada?'Entrada registrada':'Salida registrada');
+}
+
+function renderSan(){
+  const b=v('fs-buscar').toLowerCase(), est=v('fs-estado');
+  const f=db.sanitario.filter(s=>(!b||(s.nombre+s.ubicacion).toLowerCase().includes(b))&&(!est||s.estado===est));
+  document.getElementById('tbody-san').innerHTML=f.length===0?
+    `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--texto-suave)">Sin material sanitario. Añade el primero.</td></tr>`:
+    f.map(s=>`<tr>
+      <td><strong>${s.nombre}</strong></td><td>${s.tipo}</td>
+      <td>${s.ubicacion||'—'}</td><td>${badgeEstado(s.estado)}</td>
+      <td>${s.fuera>0?`<span class="badge badge-prestado">${s.fuera}</span>`:'0'}</td>
+      <td>${s.obs||'—'}</td>
+      <td>
+        <button class="btn btn-success btn-sm" onclick="openM('modal-san-entrada')">📥</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="openM('modal-san-salida')">📤</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ── CONSUMIBLES ───────────────────────────────────────────────
+function crearSol(tipo,nombre,cant,motivo,prior){
+  db.solicitudes.push({
+    id:Date.now(), fecha:hoy(), tipo, nombre,
+    cant, motivo, prioridad:prior||'normal', estado:'pendiente'
+  });
+  updateBadge();
+  pushSheet('solicitudes', db.solicitudes[db.solicitudes.length-1]);
+}
+
+function addCons(){
+  if(!v('ca-nombre')){toast('Nombre obligatorio','e');return;}
+  db.consumibles.push({
+    id:Date.now(), nombre:v('ca-nombre'),
+    stock:parseInt(v('ca-stock'))||0, minimo:parseInt(v('ca-minimo'))||5
+  });
+  pushSheet('consumibles',db.consumibles[db.consumibles.length-1]);
+  closeM('modal-cons-add'); renderCons(); toast('Artículo añadido');
+}
+
+function movCons(esEntrada){
+  const pfx=esEntrada?'ce':'cs';
+  const cid=v(pfx+'-articulo');
+  const cant=parseInt(v(pfx+'-cant'))||1;
+  const c=db.consumibles.find(x=>x.id==cid);
+  if(!c){toast('Selecciona artículo','e');return;}
+  if(esEntrada) c.stock+=cant;
+  else {
+    if(c.stock<cant){toast('Stock insuficiente','e');return;}
+    c.stock-=cant;
+    if(c.stock<=c.minimo) crearSol('consumibles',c.nombre,c.minimo-c.stock+c.minimo,'Stock bajo',c.stock===0?'urgente':'normal');
+  }
+  addMov('📦 Consumible',c.nombre,esEntrada?cant:0,esEntrada?0:cant,'',v(pfx+'-obs'));
+  updateSheet('consumibles','NOMBRE',c.nombre,{STOCK:c.stock});
+  closeM(esEntrada?'modal-cons-entrada':'modal-cons-salida');
+  renderCons(); toast(esEntrada?'Entrada registrada':'Salida registrada');
+}
+
+function renderCons(){
+  document.getElementById('tbody-cons').innerHTML=db.consumibles.length===0?
+    `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--texto-suave)">Sin artículos. Añade el primero.</td></tr>`:
+    db.consumibles.map(c=>{
+      const pct=c.minimo>0?Math.round(c.stock/c.minimo*100):100;
+      const sem=c.stock===0?'🔴':c.stock<=c.minimo?'🟡':'🟢';
+      return `<tr>
+        <td><strong>${c.nombre}</strong></td>
+        <td><strong>${c.stock}</strong></td>
+        <td>${c.minimo}</td>
+        <td>${sem} ${c.stock===0?'Agotado':c.stock<=c.minimo?'Stock bajo':'OK'}</td>
+        <td>
+          <button class="btn btn-success btn-sm" onclick="openM('modal-cons-entrada')">📥</button>
+          <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="openM('modal-cons-salida')">📤</button>
+        </td>
+      </tr>`;
+    }).join('');
+}
+
+// ── PEDIDOS ───────────────────────────────────────────────────
+function addPedido(){
+  if(!v('pd-articulo')){toast('Artículo obligatorio','e');return;}
+  crearSol('oficina',v('pd-articulo'),parseInt(v('pd-cant'))||1,v('pd-motivo'),v('pd-prior'));
+  closeM('modal-pedido'); renderPed(); renderSolic();
+  toast('Pedido registrado');
+}
+
+function renderPed(){
+  const peds=db.solicitudes.filter(s=>s.tipo==='oficina');
+  document.getElementById('tbody-ped').innerHTML=peds.length===0?
+    `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--texto-suave)">Sin pedidos registrados.</td></tr>`:
+    peds.map(p=>`<tr>
+      <td>${p.fecha}</td><td>${p.nombre}</td><td>${p.cant}</td>
+      <td><span class="badge ${p.prioridad==='urgente'?'badge-urgente':'badge-normal'}">${p.prioridad}</span></td>
+      <td>${p.motivo||'—'}</td>
+      <td><span class="badge ${p.estado==='pendiente'?'badge-asignado':'badge-disponible'}">${p.estado}</span></td>
+    </tr>`).join('');
+}
+
+// ── SOLICITUDES ───────────────────────────────────────────────
+function updateBadge(){
+  const n=db.solicitudes.filter(s=>s.estado==='pendiente').length;
+  document.getElementById('badge-nav').textContent=n;
+}
+
+function marcarGestionada(id){
+  const s=db.solicitudes.find(x=>x.id===id);
+  if(s){ s.estado='gestionada'; renderSolic(); updateBadge(); toast('Marcada como gestionada'); }
+}
+
+function renderSolic(){
+  const pend=db.solicitudes.filter(s=>s.estado==='pendiente');
+  document.getElementById('tbody-solic').innerHTML=db.solicitudes.length===0?
+    `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--texto-suave)">No hay solicitudes.</td></tr>`:
+    db.solicitudes.map(s=>`<tr>
+      <td>${s.fecha}</td>
+      <td>${s.tipo==='consumibles'?'📦 Consumible':'🛒 Oficina'}</td>
+      <td><strong>${s.nombre}</strong></td><td>${s.cant}</td>
+      <td><span class="badge ${s.prioridad==='urgente'?'badge-urgente':'badge-normal'}">${s.prioridad}</span></td>
+      <td>${s.motivo||'—'}</td>
+      <td><span class="badge ${s.estado==='pendiente'?'badge-asignado':'badge-disponible'}">${s.estado}</span></td>
+      <td>${s.estado==='pendiente'?`<button class="btn btn-success btn-sm" onclick="marcarGestionada(${s.id})">✓</button>`:''}</td>
+    </tr>`).join('');
+}
+
+function enviarCompras(){
+  const pend=db.solicitudes.filter(s=>s.estado==='pendiente');
+  if(!pend.length){toast('No hay solicitudes pendientes','w');return;}
+  const lineas=pend.map(s=>`- [${s.prioridad.toUpperCase()}] ${s.nombre} · ${s.cant} ud. · ${s.motivo}`).join('\n');
+  const asunto=encodeURIComponent(`[BiG Inventarios] Solicitudes de compra pendientes · ${hoy()}`);
+  const cuerpo=encodeURIComponent(`Hola,\n\nSolicitudes de compra pendientes:\n\n${lineas}\n\nGracias.`);
+  window.open(`mailto:${cfgEmail}?subject=${asunto}&body=${cuerpo}`);
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDash(){
+  const equipDisp=db.equipos.filter(e=>e.estado==='disponible').length;
+  const equipPrest=db.equipos.filter(e=>e.estado==='prestado').length;
+  const tabDisp=db.tablets.filter(t=>t.estado==='Disponible').length;
+  const sanFuera=db.sanitario.reduce((a,s)=>a+s.fuera,0);
+  const stockBajo=db.consumibles.filter(c=>c.stock<=c.minimo).length;
+  const pendSolic=db.solicitudes.filter(s=>s.estado==='pendiente').length;
+
+  document.getElementById('dash-grid').innerHTML=`
+    <div class="dash-card"><div class="dash-icon">💻</div><div class="dash-info"><div class="val">${equipDisp}</div><div class="lbl">Equipos disponibles</div></div></div>
+    <div class="dash-card"><div class="dash-icon">📤</div><div class="dash-info"><div class="val">${equipPrest}</div><div class="lbl">Equipos prestados</div></div></div>
+    <div class="dash-card"><div class="dash-icon">📱</div><div class="dash-info"><div class="val">${tabDisp}</div><div class="lbl">Tablets disponibles</div></div></div>
+    <div class="dash-card"><div class="dash-icon">🏥</div><div class="dash-info"><div class="val">${sanFuera}</div><div class="lbl">Material sanitario fuera</div></div></div>
+    <div class="dash-card"><div class="dash-icon">⚠️</div><div class="dash-info"><div class="val" style="color:var(--naranja)">${stockBajo}</div><div class="lbl">Consumibles bajo mínimo</div></div></div>
+    <div class="dash-card"><div class="dash-icon">🔔</div><div class="dash-info"><div class="val" style="color:var(--rojo)">${pendSolic}</div><div class="lbl">Solicitudes pendientes</div></div></div>
+  `;
+
+  document.getElementById('last-mov').innerHTML=db.movimientos.length===0?
+    `<div class="mov-item" style="color:var(--texto-suave)">Sin movimientos recientes.</div>`:
+    db.movimientos.slice(0,8).map(m=>`
+      <div class="mov-item">
+        <span class="mov-tipo">${m.tipo.split(' ')[0]}</span>
+        <div class="mov-info">
+          <div><strong>${m.nombre}</strong> · ${m.accion} ${m.cant} ud.</div>
+          <div class="mov-fecha">${m.tipo} · ${m.fecha}</div>
+        </div>
+      </div>`).join('');
+}
+
+// ── CONEXIÓN SHEETS ───────────────────────────────────────────
+const GAS_CODE = `const SHEET_ID = 'TU_SHEET_ID';
+
+function doGet(e) {
+  const sheet = e.parameter.sheet || 'equipos_informatica';
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const ws = ss.getSheetByName(sheet);
+  if (!ws) return json({error: 'Hoja no encontrada: ' + sheet});
+  const rows = ws.getDataRange().getValues();
+  const headers = rows[0];
+  const data = rows.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = row[i]);
+    return obj;
+  });
+  return json({ok: true, data, sheet, total: data.length});
+}
+
+function doPost(e) {
+  const payload = JSON.parse(e.postData.contents);
+  const {sheet, action, row, rowIndex} = payload;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const ws = ss.getSheetByName(sheet);
+  if (!ws) return json({error: 'Hoja no encontrada'});
+  if (action === 'append') {
+    const headers = ws.getRange(1,1,1,ws.getLastColumn()).getValues()[0];
+    const newRow = headers.map(h => row[h] !== undefined ? row[h] : '');
+    ws.appendRow(newRow);
+    return json({ok: true, action: 'appended'});
+  }
+  if (action === 'update') {
+    const headers = ws.getRange(1,1,1,ws.getLastColumn()).getValues()[0];
+    const allRows = ws.getDataRange().getValues();
+    const keyCol = headers.indexOf(row._keyField || 'TAG');
+    const keyVal = row[row._keyField || 'TAG'];
+    for (let i=1; i<allRows.length; i++) {
+      if (allRows[i][keyCol] == keyVal) {
+        headers.forEach((h,j) => {
+          if (row[h] !== undefined) ws.getRange(i+1, j+1).setValue(row[h]);
+        });
+        return json({ok: true, action: 'updated', row: i+1});
+      }
+    }
+    return json({ok: false, error: 'Fila no encontrada'});
+  }
+  return json({error: 'Acción desconocida'});
+}
+
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+function initCfg(){
+  setV('cfg-url',cfgUrl);
+  setV('cfg-email',cfgEmail);
+  document.getElementById('script-preview').textContent=GAS_CODE;
+}
+function copiarScript(){
+  navigator.clipboard.writeText(GAS_CODE).then(()=>toast('Apps Script copiado'));
+}
+function saveCfg(){
+  cfgUrl=v('cfg-url'); cfgEmail=v('cfg-email');
+  localStorage.setItem('big_apps_url',cfgUrl);
+  localStorage.setItem('big_email',cfgEmail);
+  toast('Configuración guardada');
+}
+async function testConexion(){
+  if(!cfgUrl){toast('Introduce la URL primero','e');return;}
+  try{
+    const r=await fetch(cfgUrl+'?sheet=equipos_informatica');
+    const d=await r.json();
+    if(d.ok){
+      document.getElementById('cfg-result').innerHTML=`<span style="color:var(--verde)">✅ Conexión OK · ${d.total} equipos encontrados</span>`;
+    } else {
+      document.getElementById('cfg-result').innerHTML=`<span style="color:var(--rojo)">❌ Error: ${d.error}</span>`;
+    }
+  } catch(err){
+    document.getElementById('cfg-result').innerHTML=`<span style="color:var(--rojo)">❌ No se pudo conectar</span>`;
+  }
+}
+
+// ── SYNC CON SHEETS ───────────────────────────────────────────
+async function syncAll(){
+  if(!cfgUrl){ toast('Configura la URL del Apps Script primero','w'); return; }
+  toast('Sincronizando...','');
+  try{
+    const sheets=['equipos_informatica','stock_tablets','sanitario','consumibles','solicitudes'];
+    const results=await Promise.all(sheets.map(s=>
+      fetch(cfgUrl+'?sheet='+s).then(r=>r.json()).catch(()=>({ok:false,data:[]}))
+    ));
+
+    // Equipos
+    if(results[0].ok && results[0].data.length>0){
+      db.equipos=results[0].data.map((r,i)=>({
+        id:i+1, fecha:r.FECHA||hoy(), tag:r.TAG||'', tipo:r.TIPO||'',
+        modelo:r.MODELO||'', proyecto:r.PROYECTO||'', ubicacion:r.UBICACION||'',
+        responsable:r.RESPONSABLE||'', estado:(r.ESTADO||'disponible').toLowerCase(),
+        sn:r.SN||'', cargador:r.CARGADOR||'si', obs:r.OBSERVACIONES||''
+      }));
+    }
+    // Tablets
+    if(results[1].ok && results[1].data.length>0){
+      db.tablets=results[1].data.map((r,i)=>({
+        id:i+1001, fecha:r.FECHA||hoy(), tag:r.TAG||'', tipo:'Tablet',
+        modelo:r.MODELO||'', ubicacion:r.UBICACION||'', estado:r.ESTADO||'Disponible',
+        sn:r.SN||'', teclado:(r.TECLADO||'no').toLowerCase(), mdm:(r.MDM||'no').toLowerCase(),
+        obs:r.OBSERVACIONES||''
+      }));
+    }
+    // Sanitario
+    if(results[2].ok && results[2].data.length>0){
+      db.sanitario=results[2].data.map((r,i)=>({
+        id:i+2001, nombre:r.NOMBRE||'', tipo:r.TIPO||'No fungible',
+        ubicacion:r.UBICACION||'', estado:(r.ESTADO||'disponible').toLowerCase(),
+        fuera:parseInt(r.FUERA)||0, obs:r.OBSERVACIONES||''
+      }));
+    }
+    // Consumibles
+    if(results[3].ok && results[3].data.length>0){
+      db.consumibles=results[3].data.map((r,i)=>({
+        id:i+3001, nombre:r.NOMBRE||'', stock:parseInt(r.STOCK)||0,
+        minimo:parseInt(r.MINIMO)||5
+      }));
+    }
+    // Solicitudes
+    if(results[4].ok && results[4].data.length>0){
+      db.solicitudes=results[4].data.map((r,i)=>({
+        id:i+4001, fecha:r.FECHA||hoy(), tipo:r.TIPO||'',
+        nombre:r.NOMBRE||'', cant:parseInt(r.CANT)||1,
+        motivo:r.MOTIVO||'', prioridad:r.PRIORIDAD||'normal', estado:r.ESTADO||'pendiente'
+      }));
+    }
+
+    // Actualizar UI
+    renderInfo(); renderTablets(); updateDisponibles();
+    renderSan(); renderCons(); renderSolic(); renderDash(); updateBadge();
+
+    const dot=document.querySelector('.dot-sync');
+    dot.classList.remove('off');
+    document.getElementById('sync-status').innerHTML='<span class="dot-sync"></span>Sync OK '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    toast(`Sync completado · ${db.equipos.length} equipos · ${db.tablets.length} tablets`,'s');
+  } catch(err){
+    toast('Error al sincronizar: '+err.message,'e');
+  }
+}
+
+async function pushSheet(sheet, row){
+  if(!cfgUrl) return;
+  try{
+    await fetch(cfgUrl,{method:'POST',body:JSON.stringify({sheet,action:'append',row})});
+  } catch(e){}
+}
+
+async function updateSheet(sheet, keyField, keyVal, row){
+  if(!cfgUrl) return;
+  try{
+    row._keyField=keyField;
+    row[keyField]=keyVal;
+    await fetch(cfgUrl,{method:'POST',body:JSON.stringify({sheet,action:'update',row})});
+  } catch(e){}
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+updateBadge();
+renderDash();
+if(cfgUrl) setTimeout(syncAll, 800);
+</script>
+</body>
+</html>
